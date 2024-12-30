@@ -189,11 +189,13 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
 
 void CC1101Fan::startResetTimer(uint8_t seconds) {
   this->publish_state();
+  ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
   reset_timer_.once(seconds * 1000, [this]() { this->resetFanSpeed(); });
 }
 
-void CC1101Fan::resetFanSpeed() {
-      this->speed = 0;
+void CC1101Fan::resetFanSpeed(uint8_t seconds) {
+      this->speed = 1;
+      ESP_LOGD("cc1101_fan", "Timer of %d seconds lapsed, assuming back to normal speed", seconds);
       publish_state();
 }
 

@@ -27,7 +27,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void control(const fan::FanCall &call) override;
   void write_state_();
   void publish_state();
-  void resetFanSpeed();
+  void resetFanSpeed(uint8_t seconds);
   void startResetTimer(uint8_t seconds);
   int speed_count_{};
   bool map_off_to_zero_{};
