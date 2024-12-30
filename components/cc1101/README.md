@@ -1,10 +1,56 @@
-## Howto
+# Controlling ITHO Mechanical Ventilation
 
-### ESPhome configuration
+## Requirements
+
+- An ESP8266 (or compatible)
+- A C1101 board (including coil)
+- Some tinkering [see Mechanics](#mechanics)
+
+## How-to using Home Assistant
+
+Ensure you have the hardware ready ([Mechanics](#mechanics)) and the `esphome` add-on installed. Next follow the ESPHome YAML configuration part
+
+## Current status:
+
+ - Sending High/Medium/Low and the Timers work
+ - Reading state and indicative time (not counting down (yet) - should HA or ESPhome do that?)
+
+## ESPHome ITHO control
+Trying to get ESPHome to mimic what is comprised in
+
+ - https://github.com/compatech/esphome_c1101
+ - https://github.com/jodur/ESPEASY_Plugin_ITHO/blob/master/_P145_Itho.ino
+ - https://github.com/adri/IthoEcoFanRFT / https://github.com/supersjimmie/IthoEcoFanRFT
+
+
+# Mechanics
+
+## Wiring schema used
+
+```
+Connections between the CC1101 and the ESP8266 or Arduino:
+CC11xx pins    ESP pins Arduino pins  Description
+*  1 - VCC        VCC      VCC           3v3
+*  2 - GND        GND      GND           Ground
+*  3 - MOSI       13=D7    Pin 11        Data input to CC11xx
+*  4 - SCK        14=D5    Pin 13        Clock pin
+*  5 - MISO/GDO1  12=D6    Pin 12        Data output from CC11xx / serial clock from CC11xx
+*  6 - GDO2       04=D2    Pin  2        Programmable output
+*  7 - GDO0       ?        Pin  ?        Programmable output
+*  8 - CSN        15=D8    Pin 10        Chip select / (SPI_SS)
+```
+
+# Dependencies
+
+ - Home Assistant
+ - ESPHome
+ - https://github.com/CoMPaTech/esphome_itho
+
+# ESPhome YAML configuration
 
 See [cc1101.yaml](cc1101.yaml) for configuration details, specifically for adding the appropriate buttons.
 
-#### Top part
+## Top part, configure accordingly, the libaries **must** be there!
 
 ```yaml
 esphome:
@@ -16,13 +62,13 @@ esphome:
     - Ticker
 
 external_components:
-  - source: 
+  - source:
       type: git
       url: https://github.com/CoMPaTech/esphome_ct
     # refresh: 3600s # only set this briefly otherwise it just refreshes daily, see https://esphome.io/components/external_components#external-components-refresh for setting refresh too low
 ```
 
-#### Fan part
+## Fan part
 
 ```yaml
 fan:
@@ -35,11 +81,11 @@ fan:
 
 #### Button part
 
-See exampel configuration file
+See example configuration file for details [cc1101.yaml](cc1101.yaml) on the buttons as instructed
 
-## Known limitations
-
-Doesn't appear to 'read' (listen) to (other) remotes sending commands (even though the code is there)
+# Known limitations
 
 Just low/medium/high ... set speed_count to 4 if you need full
 If you map off to zero, 'low' and 'off' are the same (i.e., mine only has 3 speeds - there is no off)
+
+
