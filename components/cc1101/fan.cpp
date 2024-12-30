@@ -14,7 +14,6 @@ void ITHOcheck();
 //bool ITHOhasPacket = false;
 Ticker ITHOticker;
 Ticker reset_timer_;
-int Timer=0;
 int LastIDindex = 0;
 int OldLastIDindex = 0;
 long LastPublish=0; 
@@ -148,10 +147,13 @@ void CC1101Fan::set_fan_speed(int speed) {
         rf.sendCommand(IthoLow);
         break;
     }
+    if (reset_timer_.is_active()) {
+      reset_timer_.cancel();  // Cancel the timer if it's active
+      ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
+    }
     this->LastSpeed = this->Speed;
     this->Speed = speed;
     if ( this->map_off_to_zero_ && speed == 0 ) this->Speed = 1;
-    // Timer = 0;
   
     this->publish_state();
   } 
@@ -168,21 +170,21 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       rf.sendCommand(IthoTimer1);
       this->speed = 1.0;
       publish_state();
-      startResetTimer(10);
+      startResetTimer(Time1);
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
       this->speed = 1.0;
       publish_state();
-      startResetTimer(20);
+      startResetTimer(Time2);
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
       this->speed = 1.0;
       publish_state();
-      startResetTimer(30);
+      startResetTimer(Time3);
       break;
   }
 }
@@ -218,43 +220,55 @@ void CC1101Fan::ITHOcheck() {
         break;
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
-        Timer = 0;
+        if (reset_timer_.is_active()) {
+          reset_timer_.cancel();  // Cancel the timer if it's active
+          ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
+        }
         this->LastSpeed = this->Speed;
         this->Speed = 1;
         break;
       case IthoMedium:
         ESP_LOGD("c1101_fan", "2 / Medium");
-        Timer = 0;
+        if (reset_timer_.is_active()) {
+          reset_timer_.cancel();  // Cancel the timer if it's active
+          ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
+        }
         this->LastSpeed = this->Speed;
         this->Speed = 2;
         break;
       case IthoHigh:
         ESP_LOGD("c1101_fan", "3 / High");
-        Timer = 0;
+        if (reset_timer_.is_active()) {
+          reset_timer_.cancel();  // Cancel the timer if it's active
+          ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
+        }
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
       case IthoFull:
         ESP_LOGD("c1101_fan", "4 / Full");
-        Timer = 0;
+        if (reset_timer_.is_active()) {
+          reset_timer_.cancel();  // Cancel the timer if it's active
+          ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
+        }
         this->LastSpeed = this->Speed;
         this->Speed = 4;
         break;
       case IthoTimer1:
         ESP_LOGD("c1101_fan", "Timer1");
-        Timer = Time1;
+        startResetTimer(Time1);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
       case IthoTimer2:
         ESP_LOGD("c1101_fan", "Timer2");
-        Timer = Time2;
+        startResetTimer(Time2);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
       case IthoTimer3:
         ESP_LOGD("c1101_fan", "Timer3");
-        Timer = Time3;
+        startResetTimer(Time3);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
