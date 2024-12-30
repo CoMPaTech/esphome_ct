@@ -60,54 +60,7 @@ void CC1101Fan::check_pin() {
 }
 
 void CC1101Fan::update() {
-    if (rf.checkForNewPacket()) {
-        IthoCommand cmd = rf.getLastCommand();
-        IthoPacket pkt = rf.getLastPacket();
-        LastID = rf.getLastIDstr();
-        switch (cmd) {
-            // Process command
-      case IthoUnknown:
-        ESP_LOGD("c1101_fan", "Unknown Itho packet found");
-        break;
-      case IthoLow:
-        ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
-        Timer = 0;
-        break;
-      case IthoMedium:
-        ESP_LOGD("c1101_fan", "2 / Medium");
-        Timer = 0;
-        break;
-      case IthoHigh:
-        ESP_LOGD("c1101_fan", "3 / High");
-        Timer = 0;
-        break;
-      case IthoFull:
-        ESP_LOGD("c1101_fan", "4 / Full");
-        Timer = 0;
-        break;
-      case IthoTimer1:
-        ESP_LOGD("c1101_fan", "Timer1");
-        Timer = Time1;
-        break;
-      case IthoTimer2:
-        ESP_LOGD("c1101_fan", "Timer2");
-        Timer = Time2;
-        break;
-      case IthoTimer3:
-        ESP_LOGD("c1101_fan", "Timer3");
-        Timer = Time3;
-        break;
-      case IthoJoin:
-        ESP_LOGD("c1101_fan", "IthoJoin spotted");
-        break;
-      case IthoLeave:
-        ESP_LOGD("c1101_fan", "IthoLeave spotted");
-        break;
-      default:
-        ESP_LOGD("c1101_fan", "Other command spotted");
-        break;
-        }
-    }
+    CC1101Fan::ITHOcheck();
 /*
     // Only publish if the state has changed
     if (fantimer->state != String(Timer).c_str()) {
@@ -232,35 +185,41 @@ void CC1101Fan::ITHOcheck() {
     LastID = rf.getLastIDstr();
     switch (cmd) {
       case IthoUnknown:
-        ESP_LOGD("c1101_fan", "Unknown Itho packet found");
         break;
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
         Timer = 0;
+        this->Speed = 0;
         break;
       case IthoMedium:
         ESP_LOGD("c1101_fan", "2 / Medium");
         Timer = 0;
+        this->Speed = 1;
         break;
       case IthoHigh:
         ESP_LOGD("c1101_fan", "3 / High");
         Timer = 0;
+        this->Speed = 2;
         break;
       case IthoFull:
         ESP_LOGD("c1101_fan", "4 / Full");
         Timer = 0;
+        this->Speed = 3;
         break;
       case IthoTimer1:
         ESP_LOGD("c1101_fan", "Timer1");
         Timer = Time1;
+        this->Speed = 3;
         break;
       case IthoTimer2:
         ESP_LOGD("c1101_fan", "Timer2");
         Timer = Time2;
+        this->Speed = 3;
         break;
       case IthoTimer3:
         ESP_LOGD("c1101_fan", "Timer3");
         Timer = Time3;
+        this->Speed = 3;
         break;
       case IthoJoin:
         ESP_LOGD("c1101_fan", "IthoJoin spotted");
