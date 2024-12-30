@@ -176,7 +176,7 @@ void IRAM_ATTR CC1101Fan::ITHOinterrupt() {
 }
 
 void CC1101Fan::ITHOcheck() {
-  noInterrupts();
+  //noInterrupts();
   if (rf.checkForNewPacket()) {
     ESP_LOGD("c1101_fan", "There is a packet");
     IthoCommand cmd = rf.getLastCommand();
@@ -225,7 +225,7 @@ void CC1101Fan::ITHOcheck() {
         break;
     }
   }
-  interrupts();
+  //interrupts();
 };
 
 } // namespace cc1101fan
