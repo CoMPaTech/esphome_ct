@@ -21,7 +21,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void set_fan_speed(int speed);
   void send_other_command(uint8_t other_command);
   static void ITHOinterrupt();
-  static void ITHOcheck();
+  void ITHOcheck();
 
  protected:
   void control(const fan::FanCall &call) override;
