@@ -14,6 +14,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void set_data_pin(GPIOPin *data_pin) { data_pin_ = data_pin; }
   void setup() override;
   void update() override;
+  void check_pin();
   void set_preset_modes(const std::set<std::string> &presets) { this->preset_modes_ = presets; }
   fan::FanTraits get_traits() override;
   void set_output(void *output);
