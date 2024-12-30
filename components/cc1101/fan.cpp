@@ -23,10 +23,9 @@ String LastID = "";
 bool timer_active_;
 
 // Timer values for hardware timer in Fan
-uint8_t Time1 = 10*60;
-uint8_t Time2 = 20*60;
-uint8_t Time3 = 30*60;
-
+uint16_t Time1 = 10*60;
+uint16_t Time2 = 20*60;
+uint16_t Time3 = 30*60;
 
 void CC1101Fan::setup() {
   auto restore = this->restore_state_();
@@ -149,7 +148,7 @@ void CC1101Fan::set_fan_speed(int speed) {
         break;
     }
     if (timer_active_) {
-      reset_timer_.end(); 
+      reset_timer_.reset(); 
       ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
     }
     this->LastSpeed = this->Speed;
@@ -224,7 +223,7 @@ void CC1101Fan::ITHOcheck() {
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
         if (timer_active_) {
-          reset_timer_.end();  // Cancel the timer if it's active
+          reset_timer_.reset();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
         this->LastSpeed = this->Speed;
@@ -233,7 +232,7 @@ void CC1101Fan::ITHOcheck() {
       case IthoMedium:
         ESP_LOGD("c1101_fan", "2 / Medium");
         if (timer_active_) {
-          reset_timer_.end();  // Cancel the timer if it's active
+          reset_timer_.reset();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
         this->LastSpeed = this->Speed;
@@ -242,7 +241,7 @@ void CC1101Fan::ITHOcheck() {
       case IthoHigh:
         ESP_LOGD("c1101_fan", "3 / High");
         if (timer_active_) {
-          reset_timer_.end();  // Cancel the timer if it's active
+          reset_timer_.reset();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
         this->LastSpeed = this->Speed;
@@ -251,7 +250,7 @@ void CC1101Fan::ITHOcheck() {
       case IthoFull:
         ESP_LOGD("c1101_fan", "4 / Full");
         if (timer_active_) {
-          reset_timer_.end();  // Cancel the timer if it's active
+          reset_timer_.reset();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
         this->LastSpeed = this->Speed;
