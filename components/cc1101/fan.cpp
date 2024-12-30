@@ -42,7 +42,7 @@ void CC1101Fan::setup() {
   //    CC1101Fan::ITHOinterrupt();
   //}, RISING);
 
-  //this->data_pin_->attach_interrupt(CC1101Fan::ITHOinterrupt, RISING);
+  this->data_pin_->attach_interrupt(CC1101Fan::ITHOinterrupt, RISING);
   // Init CC1101
   //pinMode(D1, INPUT);
   //attachInterrupt(D1, CC1101Fan::ITHOinterrupt, RISING);
