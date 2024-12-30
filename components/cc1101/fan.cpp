@@ -20,11 +20,12 @@ long LastPublish=0;
 bool InitRunned = false;
 IthoPacket pkt;
 String LastID = "";
+bool timer_active_;
 
 // Timer values for hardware timer in Fan
-#define Time1      10*60
-#define Time2      20*60
-#define Time3      30*60
+uint8_t Time1 = 10*60
+uint8_t Time2 = 20*60
+uint8_t Time3 = 30*60
 
 
 void CC1101Fan::setup() {
@@ -147,7 +148,7 @@ void CC1101Fan::set_fan_speed(int speed) {
         rf.sendCommand(IthoLow);
         break;
     }
-    if (reset_timer_.is_active()) {
+    if (timer_active_) {
       reset_timer_.cancel();  // Cancel the timer if it's active
       ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
     }
@@ -190,13 +191,15 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
 }
 
 void CC1101Fan::startResetTimer(uint8_t seconds) {
-  this->publish_state();
+  timer_active_ = true;
   ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
   reset_timer_.once(seconds * 1000, [this, seconds]() { this->resetFanSpeed(seconds); });
+  this->publish_state();
 }
 
 void CC1101Fan::resetFanSpeed(uint8_t seconds) {
       this->speed = 1;
+      timer_active_ = false;
       ESP_LOGD("cc1101_fan", "Timer of %d seconds lapsed, assuming back to normal speed", seconds);
       publish_state();
 }
@@ -220,7 +223,7 @@ void CC1101Fan::ITHOcheck() {
         break;
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
-        if (reset_timer_.is_active()) {
+        if (timer_active_) {
           reset_timer_.cancel();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
@@ -229,7 +232,7 @@ void CC1101Fan::ITHOcheck() {
         break;
       case IthoMedium:
         ESP_LOGD("c1101_fan", "2 / Medium");
-        if (reset_timer_.is_active()) {
+        if (timer_active_) {
           reset_timer_.cancel();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
@@ -238,7 +241,7 @@ void CC1101Fan::ITHOcheck() {
         break;
       case IthoHigh:
         ESP_LOGD("c1101_fan", "3 / High");
-        if (reset_timer_.is_active()) {
+        if (timer_active_) {
           reset_timer_.cancel();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
@@ -247,7 +250,7 @@ void CC1101Fan::ITHOcheck() {
         break;
       case IthoFull:
         ESP_LOGD("c1101_fan", "4 / Full");
-        if (reset_timer_.is_active()) {
+        if (timer_active_) {
           reset_timer_.cancel();  // Cancel the timer if it's active
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled");
         }
