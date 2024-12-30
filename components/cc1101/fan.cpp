@@ -34,6 +34,7 @@ void CC1101Fan::setup() {
     ESP_LOGD("cc1101_fan", "restoring");
     restore->apply(*this);
   }
+  this->set_custom_attribute("remaining_time", -1);
 
   rf.init();
   this->data_pin_->setup();
@@ -75,15 +76,18 @@ void CC1101Fan::update() {
 }
 
 void CC1101Fan::publish_state() {
+  current_state = this->state;
+  current_speed = this->speed;
   this->speed = 0;
   this->state = 0;
-  this->set_custom_attribute("remaining_time", -1);
   if (this->Speed >= 0) { 
     this->speed = this->Speed;
     this->state = 1;
   }
-  ESP_LOGD("cc1101_fan", "Publishing state: %d from speed %d", this->state, this->Speed);
-  this->state_callback_(); // Notify ESPHome about the state change
+  if (! current_state == this->state || ! current_speed == this->speed ) {
+    ESP_LOGD("cc1101_fan", "Publishing state: %d from speed %d", this->state, this->Speed);
+    this->state_callback_(); // Notify ESPHome about the state change
+  }
 
 }
 
