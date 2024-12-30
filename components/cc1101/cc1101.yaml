@@ -26,13 +26,23 @@ button:
     name: "Send join command"
     on_press:
       then:
-        - component.cc1101.mech_fan:
-            call: send_other_command
-            command: 0
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(0);
   - platform: template
     name: "Run Timer for 10 Minutes"
     on_press:
       then:
-        - component.cc1101.mech_fan:
-            call: send_other_command
-            command: 1
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(1);
+  - platform: template
+    name: "Run Timer for 20 Minutes"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(2);
+  - platform: template
+    name: "Run Timer for 30 Minutes"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(3);

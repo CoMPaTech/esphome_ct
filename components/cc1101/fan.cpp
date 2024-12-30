@@ -207,6 +207,7 @@ void CC1101Fan::ITHOcheck() {
         Timer = Time3;
         break;
       case IthoJoin:
+        ESP_LOGD("custom", "IthoJoin spotted");
         break;
       case IthoLeave:
         break;
