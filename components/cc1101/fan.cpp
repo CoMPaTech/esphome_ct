@@ -139,6 +139,26 @@ void CC1101Fan::set_fan_speed(int speed) {
   } 
 }
 
+void CC1101Fan::send_other_command(uint8_t other_command) {
+  switch (other_command) {
+    case 0: // join
+      ESP_LOGD("cc1101_fan", "RF called witht %d, sending Join", other_command);
+      rf.sendCommand(IthoJoin);
+      break;
+    case 1: // timer 1
+      ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer1", other_command);
+      rf.sendCommand(IthoTimer1);
+      break;
+    case 2: // timer 2
+      ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer2", other_command);
+      rf.sendCommand(IthoTimer2);
+      break;
+    case 3: // timer 3
+      ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer3", other_command);
+      rf.sendCommand(IthoTimer3);
+      break;
+  }
+}
 
 void CC1101Fan::set_output(void *output) {
   // No-op: This method is required by the ESPHome build system but is unused.
