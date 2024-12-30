@@ -13,6 +13,7 @@ void ITHOcheck();
 // extra for interrupt handling
 //bool ITHOhasPacket = false;
 Ticker ITHOticker;
+Ticker reset_timer_;
 int Timer=0;
 int LastIDindex = 0;
 int OldLastIDindex = 0;
@@ -74,8 +75,13 @@ void CC1101Fan::update() {
 }
 
 void CC1101Fan::publish_state() {
-  this->speed = this->Speed;
-  this->state = this->Speed;
+  this->speed = 0;
+  this->state = 0;
+  this->set_custom_attribute("remaining_time", -1);
+  if (this->Speed >= 0) { 
+    this->speed = this->Speed;
+    this->state = 1;
+  }
   ESP_LOGD("cc1101_fan", "Publishing state: %d from speed %d", this->state, this->Speed);
   this->state_callback_(); // Notify ESPHome about the state change
 
@@ -157,16 +163,37 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 1: // timer 1
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer1", other_command);
       rf.sendCommand(IthoTimer1);
+      this->speed = 1.0;
+      publish_state();
+      startResetTimer(10);
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
+      this->speed = 1.0;
+      publish_state();
+      startResetTimer(20);
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
+      this->speed = 1.0;
+      publish_state();
+      startResetTimer(30);
       break;
   }
+}
+
+void startResetTimer(uint8t seconds) {
+  this->set_custom_attribute("remaining_time", seconds);
+  this->publish_state();
+  reset_timer_.once(seconds * 1000, [this]() { this->resetFanSpeed(); });
+}
+
+void resetFanSpeed() {
+      this->speed = 0;
+      this->set_custom_attribute("remaining_time", -1);
+      publish_state();
 }
 
 void CC1101Fan::set_output(void *output) {
