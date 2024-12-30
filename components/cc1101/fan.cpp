@@ -188,22 +188,22 @@ void CC1101Fan::ITHOcheck() {
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
         Timer = 0;
-        this->Speed = 0;
+        this->Speed = 1;
         break;
       case IthoMedium:
         ESP_LOGD("c1101_fan", "2 / Medium");
         Timer = 0;
-        this->Speed = 1;
+        this->Speed = 2;
         break;
       case IthoHigh:
         ESP_LOGD("c1101_fan", "3 / High");
         Timer = 0;
-        this->Speed = 2;
+        this->Speed = 3;
         break;
       case IthoFull:
         ESP_LOGD("c1101_fan", "4 / Full");
         Timer = 0;
-        this->Speed = 3;
+        this->Speed = 4;
         break;
       case IthoTimer1:
         ESP_LOGD("c1101_fan", "Timer1");
