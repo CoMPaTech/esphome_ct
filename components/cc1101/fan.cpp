@@ -38,6 +38,7 @@ void CC1101Fan::setup() {
   this->data_pin_->setup();
   this->data_pin_->pin_mode(gpio::FLAG_INPUT);
 //  ITHOticker.attach_ms(100, std::bind(&CC1101Fan::check_pin, this));
+
   
   //this->data_pin_->attach_interrupt(CC1101Fan::ITHOinterrupt, gpio::TriggerMode::RISING);
 
@@ -61,6 +62,7 @@ void CC1101Fan::setup() {
 
 void CC1101Fan::update() {
     CC1101Fan::ITHOcheck();
+
 /*
     // Only publish if the state has changed
     if (fantimer->state != String(Timer).c_str()) {
@@ -171,6 +173,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       this->speed = 1.0;
       publish_state();
       startResetTimer(Time1);
+
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer2", other_command);
@@ -178,6 +181,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       this->speed = 1.0;
       publish_state();
       startResetTimer(Time2);
+
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called witht %d, sending Timer3", other_command);
@@ -214,6 +218,7 @@ void CC1101Fan::set_output(void *output) {
 void CC1101Fan::ITHOcheck() {
   //noInterrupts();
   if (rf.checkForNewPacket()) {
+    ESP_LOGD("c1101_fan", "There is a packet");
     IthoCommand cmd = rf.getLastCommand();
     IthoPacket pkt = rf.getLastPacket();
     LastID = rf.getLastIDstr();
