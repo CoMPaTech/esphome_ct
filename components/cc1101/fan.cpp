@@ -37,7 +37,7 @@ void CC1101Fan::setup() {
   rf.init();
   this->data_pin_->setup();
   this->data_pin_->pin_mode(gpio::FLAG_INPUT);
-  ITHOticker.attach_ms(100, std::bind(&CC1101Fan::check_pin, this));
+//  ITHOticker.attach_ms(100, std::bind(&CC1101Fan::check_pin, this));
   
   //this->data_pin_->attach_interrupt(CC1101Fan::ITHOinterrupt, gpio::TriggerMode::RISING);
 
@@ -53,11 +53,11 @@ void CC1101Fan::setup() {
   rf.initReceive();
 }
 
-void CC1101Fan::check_pin() {
-  if (this->data_pin_->digital_read()) {
-    CC1101Fan::ITHOinterrupt();
-  }
-}
+//void CC1101Fan::check_pin() {
+//  if (this->data_pin_->digital_read()) {
+//    CC1101Fan::ITHOinterrupt();
+//  }
+//}
 
 void CC1101Fan::update() {
     CC1101Fan::ITHOcheck();
