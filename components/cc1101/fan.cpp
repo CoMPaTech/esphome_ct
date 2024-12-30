@@ -75,8 +75,8 @@ void CC1101Fan::update() {
 }
 
 void CC1101Fan::publish_state() {
-  current_state = this->state;
-  current_speed = this->speed;
+  auto current_state = this->state;
+  auto current_speed = this->speed;
   this->speed = 0;
   this->state = 0;
   if (this->Speed >= 0) { 
