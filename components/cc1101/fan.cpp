@@ -7,7 +7,7 @@ namespace esphome {
 namespace cc1101fan {
 
 IthoCC1101 rf;
-void ITHOinterrupt() IRAM_ATTR;
+//void ITHOinterrupt() IRAM_ATTR;
 void ITHOcheck();
 
 // extra for interrupt handling
@@ -172,9 +172,9 @@ void CC1101Fan::set_output(void *output) {
   // No-op: This method is required by the ESPHome build system but is unused.
 }
 
-void IRAM_ATTR CC1101Fan::ITHOinterrupt() {
-	ITHOticker.once_ms(10, CC1101Fan::ITHOcheck);
-}
+//void IRAM_ATTR CC1101Fan::ITHOinterrupt() {
+//	ITHOticker.once_ms(10, CC1101Fan::ITHOcheck);
+//}
 
 void CC1101Fan::ITHOcheck() {
   //noInterrupts();
