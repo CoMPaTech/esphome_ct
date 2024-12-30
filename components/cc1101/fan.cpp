@@ -83,7 +83,7 @@ void CC1101Fan::publish_state() {
     this->speed = this->Speed;
     this->state = 1;
   }
-  if (! current_state == this->state || ! current_speed == this->speed ) {
+  if (current_state != this->state || ! current_speed != this->speed ) {
     ESP_LOGD("cc1101_fan", "Publishing state: %d from speed %d", this->state, this->Speed);
     this->state_callback_(); // Notify ESPHome about the state change
   }
@@ -187,12 +187,12 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
   }
 }
 
-void startResetTimer(uint8t seconds) {
+void CC1101Fan::startResetTimer(uint8t seconds) {
   this->publish_state();
   reset_timer_.once(seconds * 1000, [this]() { this->resetFanSpeed(); });
 }
 
-void resetFanSpeed() {
+void CC1101Fan::resetFanSpeed() {
       this->speed = 0;
       publish_state();
 }
