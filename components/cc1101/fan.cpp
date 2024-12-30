@@ -187,7 +187,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
   }
 }
 
-void CC1101Fan::startResetTimer(uint8t seconds) {
+void CC1101Fan::startResetTimer(uint8_t seconds) {
   this->publish_state();
   reset_timer_.once(seconds * 1000, [this]() { this->resetFanSpeed(); });
 }

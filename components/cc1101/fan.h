@@ -28,7 +28,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void write_state_();
   void publish_state();
   void resetFanSpeed();
-  void startResetTimer(uint8t seconds);
+  void startResetTimer(uint8_t seconds);
   int speed_count_{};
   bool map_off_to_zero_{};
   //fan::FanTraits traits_;
