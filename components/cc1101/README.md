@@ -77,11 +77,40 @@ fan:
     name: "Mechanical Fan"
     data_pin: D1
     map_off_to_zero: True
+    id: mech_fan
 ```
 
 #### Button part
 
 See example configuration file for details [cc1101.yaml](cc1101.yaml) on the buttons as instructed
+
+```yaml
+button:
+  - platform: template
+    name: "Send join command"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(0);
+  - platform: template
+    name: "Run Timer for 10 Minutes"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(1);
+  - platform: template
+    name: "Run Timer for 20 Minutes"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(2);
+  - platform: template
+    name: "Run Timer for 30 Minutes"
+    on_press:
+      then:
+        - lambda: |-
+            ((cc1101fan::CC1101Fan*)(&id(mech_fan)))->send_other_command(3);
+```
 
 # Known limitations
 
