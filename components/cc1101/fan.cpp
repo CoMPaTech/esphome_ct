@@ -34,7 +34,6 @@ void CC1101Fan::setup() {
     ESP_LOGD("cc1101_fan", "restoring");
     restore->apply(*this);
   }
-  this->set_custom_attribute("remaining_time", -1);
 
   rf.init();
   this->data_pin_->setup();
@@ -189,14 +188,12 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
 }
 
 void startResetTimer(uint8t seconds) {
-  this->set_custom_attribute("remaining_time", seconds);
   this->publish_state();
   reset_timer_.once(seconds * 1000, [this]() { this->resetFanSpeed(); });
 }
 
 void resetFanSpeed() {
       this->speed = 0;
-      this->set_custom_attribute("remaining_time", -1);
       publish_state();
 }
 
