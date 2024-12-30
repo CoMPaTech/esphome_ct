@@ -165,12 +165,10 @@ void CC1101Fan::set_output(void *output) {
 }
 
 void IRAM_ATTR CC1101Fan::ITHOinterrupt() {
-        ESP_LOGD("c1101_fan", "Debug: in ithointerrupt");
 	ITHOticker.once_ms(10, CC1101Fan::ITHOcheck);
 }
 
 void CC1101Fan::ITHOcheck() {
-  ESP_LOGD("c1101_fan", "Debug: in ithocheck");
   noInterrupts();
   if (rf.checkForNewPacket()) {
     IthoCommand cmd = rf.getLastCommand();
