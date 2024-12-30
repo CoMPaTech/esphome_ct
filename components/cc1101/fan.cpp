@@ -179,7 +179,6 @@ void CC1101Fan::set_output(void *output) {
 void CC1101Fan::ITHOcheck() {
   //noInterrupts();
   if (rf.checkForNewPacket()) {
-    ESP_LOGD("c1101_fan", "There is a packet");
     IthoCommand cmd = rf.getLastCommand();
     IthoPacket pkt = rf.getLastPacket();
     LastID = rf.getLastIDstr();
@@ -231,6 +230,7 @@ void CC1101Fan::ITHOcheck() {
         ESP_LOGD("c1101_fan", "Other command spotted");
         break;
     }
+    this->publish_state();
   }
   //interrupts();
 };
