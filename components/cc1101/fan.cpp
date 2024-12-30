@@ -179,39 +179,41 @@ void CC1101Fan::ITHOcheck() {
         //ESP_LOGD("custom", "Unknown state, packet is");
         break;
       case IthoLow:
-        ESP_LOGD("custom", "1 / Low (or 0 / Off)");
+        ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
         Timer = 0;
         break;
       case IthoMedium:
-        ESP_LOGD("custom", "2 / Medium");
+        ESP_LOGD("c1101_fan", "2 / Medium");
         Timer = 0;
         break;
       case IthoHigh:
-        ESP_LOGD("custom", "3 / High");
+        ESP_LOGD("c1101_fan", "3 / High");
         Timer = 0;
         break;
       case IthoFull:
-        ESP_LOGD("custom", "4 / Full");
+        ESP_LOGD("c1101_fan", "4 / Full");
         Timer = 0;
         break;
       case IthoTimer1:
-        ESP_LOGD("custom", "Timer1");
+        ESP_LOGD("c1101_fan", "Timer1");
         Timer = Time1;
         break;
       case IthoTimer2:
-        ESP_LOGD("custom", "Timer2");
+        ESP_LOGD("c1101_fan", "Timer2");
         Timer = Time2;
         break;
       case IthoTimer3:
-        ESP_LOGD("custom", "Timer3");
+        ESP_LOGD("c1101_fan", "Timer3");
         Timer = Time3;
         break;
       case IthoJoin:
-        ESP_LOGD("custom", "IthoJoin spotted");
+        ESP_LOGD("c1101_fan", "IthoJoin spotted");
         break;
       case IthoLeave:
+        ESP_LOGD("c1101_fan", "IthoLeave spotted");
         break;
       default:
+        ESP_LOGD("c1101_fan", "Other command spotted");
         break;
     }
   }
