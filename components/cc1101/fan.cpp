@@ -38,10 +38,6 @@ void CC1101Fan::setup() {
   this->data_pin_->setup();
   this->data_pin_->pin_mode(gpio::FLAG_INPUT);
   
-  this->interrupt_sensor_ = new BinarySensor();
-  this->interrupt_sensor_->set_pin(this->data_pin_);
-  this->interrupt_sensor_->set_trigger_on_edge(true);
-
   //this->data_pin_->attach_interrupt(CC1101Fan::ITHOinterrupt, gpio::TriggerMode::RISING);
 
   //auto gpio_num = this->data_pin_->get_pin();
@@ -56,14 +52,9 @@ void CC1101Fan::setup() {
   rf.initReceive();
 }
 
-void CC1101Fan::loop() {
-    if (this->interrupt_sensor_->state) {
-      ESP_LOGD("cc1101_fan", "Interrupt triggered (RISING edge detected)");
-      // Handle the interrupt event
-    }
-}
 void CC1101Fan::update() {
   if (this->data_pin_->digital_read()) {
+    ESP_LOGD("cc1101_fan", "Digital read, calling interrupt");
     CC1101Fan::ITHOinterrupt();
   }
 /*
