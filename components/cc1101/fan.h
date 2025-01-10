@@ -18,7 +18,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void set_preset_modes(const std::set<std::string> &presets) { this->preset_modes_ = presets; }
   fan::FanTraits get_traits() override;
   void set_output(void *output);
-  void set_fan_speed(int speed);
+  void set_fan_speed(uint8_t speed);
   void send_other_command(uint8_t other_command);
 //  static void ITHOinterrupt();
   void ITHOcheck();
