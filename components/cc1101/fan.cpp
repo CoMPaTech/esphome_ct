@@ -146,8 +146,11 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
         rf.sendCommand(IthoLow);
         break;
       case 0:
-        if ( this->map_off_to_zero_) { rf.sendCommand(IthoLow); }
-          else { rf.sendCommand(IthoStandby); }
+        if (this->map_off_to_zero_) {
+          rf.sendCommand(IthoLow);
+        } else {
+          rf.sendCommand(IthoStandby);
+        }
         break;
     }
     if (timer_active_) {
@@ -236,6 +239,15 @@ void CC1101Fan::ITHOcheck() {
     ESP_LOGD("c1101_fan", "Debug - LastID: %s", LastID.c_str());
     switch (cmd) {
       case IthoUnknown:
+        break;
+      case IthoStandby:
+        ESP_LOGD("c1101_fan", "0 / Standby");
+        if (timer_active_) {
+          reset_timer_.detach();
+          ESP_LOGD("cc1101_fan", "Timer was active and has been canceled received remote sending standby");
+        }
+        this->LastSpeed = this->Speed;
+        this->Speed = 0;
         break;
       case IthoLow:
         ESP_LOGD("c1101_fan", "1 / Low (or 0 / Off)");
