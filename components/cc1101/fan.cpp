@@ -146,7 +146,8 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
         rf.sendCommand(IthoLow);
         break;
       case 0:
-        rf.sendCommand(IthoLow);
+        if ( this->map_off_to_zero_) { rf.sendCommand(IthoLow); }
+          else { rf.sendCommand(IthoStandby); }
         break;
     }
     if (timer_active_) {
