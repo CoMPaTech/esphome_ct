@@ -9,6 +9,7 @@ namespace ithofan {
 
 static const char *const TAG = "ithofan";
 static const int32_t SYMBOL = 640;
+static IthoFanComponent *IthoFanComponent::singleton_ = nullptr;
 
 void IthoFanComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "IthoFan:");
@@ -20,6 +21,12 @@ void IthoFanComponent::setup() {
   uint32_t type = fnv1_hash(std::string("IthoFan: ") + format_hex(this->address_));
   this->preferences_ = global_preferences->make_preference<uint16_t>(type);
   this->preferences_.load(&this->code_);
+  auto addr_pref = global_preferences->make_preference<uint32_t>(type + 1);
+  if (!addr_pref.load(&this->address_)) {
+    // If never set, default to 0x000000
+    this->address_ = 0x000000;
+    addr_pref.save(&this->address_);
+  }
   this->rx_->register_listener(this);
 }
 

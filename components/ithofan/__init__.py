@@ -1,0 +1,1 @@
+"""IthoFan component."""

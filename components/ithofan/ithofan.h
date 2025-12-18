@@ -174,6 +174,12 @@ class IthoFanSensor {
 
 class IthoFanComponent : public Component, public remote_base::RemoteReceiverListener {
  public:
+  static IthoFanComponent *singleton_;   // NEW
+
+  IthoFanComponent() { singleton_ = this; }  // NEW
+
+  static IthoFanComponent *get_singleton() { return singleton_; } // NEW
+
   float get_setup_priority() const override { return setup_priority::LATE; }
   void setup() override;
   void dump_config() override;
@@ -183,15 +189,14 @@ class IthoFanComponent : public Component, public remote_base::RemoteReceiverLis
   void set_tx(remote_transmitter::RemoteTransmitterComponent *tx) { this->tx_ = tx; }
   void set_rx(remote_receiver::RemoteReceiverComponent *rx) { this->rx_ = rx; }
   void set_address(uint32_t address) { this->address_ = address; }
-  // void add_sensor(IthoFanSensor *sensor) { this->sensors_.push_back(sensor); }
  protected:
   remote_transmitter::RemoteTransmitterComponent *tx_{nullptr};
   remote_receiver::RemoteReceiverComponent *rx_{nullptr};
   ESPPreferenceObject preferences_;
   uint32_t address_;
   uint16_t code_;
-  // std::vector<IthoFanSensor *> sensors_;
 };
+
 
 }  // namespace ithofan
 }  // namespace esphome
