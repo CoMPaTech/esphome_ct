@@ -1,7 +1,7 @@
 #pragma once
 
+#include "esphome/components/cc1101/cc1101.h"
 #include "esphome/core/component.h"
-#include "esphome/core/components/cc1101/cc1101.h"
 #include "esphome/core/preferences.h"
 
 namespace esphome {
