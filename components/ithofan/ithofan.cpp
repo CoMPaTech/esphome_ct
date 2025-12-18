@@ -62,31 +62,14 @@ void IthoFanComponent::send_command(IthoCommand command, uint32_t repeat) {
   this->code_++;
   this->preferences_.save(&this->code_);
 
-  // --- CC1101 transmit sequence ---
-  // Put radio into IDLE
-  writeCommand(CC1101_SIDLE);
+  auto call = cc1101::CC1101Call(id(itho_cc1101));
+  call.set_data(frame, sizeof(frame));
+  call.set_repeat(repeat);
+  call.perform();
 
-  // Flush TX FIFO
-  writeCommand(CC1101_SFTX);
-
-  // Load frame into TX FIFO
-  writeBurstRegister(CC1101_TXFIFO | CC1101_WRITE_BURST, frame, sizeof(frame));
-
-  // Start transmission
-  writeCommand(CC1101_STX);
-
-  // Optionally repeat
-  for (uint32_t i = 0; i < repeat; i++) {
-    // reload frame and STX again
-    writeBurstRegister(CC1101_TXFIFO | CC1101_WRITE_BURST, frame, sizeof(frame));
-    writeCommand(CC1101_STX);
-  }
-
-  // Return to IDLE
-  writeCommand(CC1101_SIDLE);
 }
 
-bool IthoFanComponent::on_receive(uint8_t *raw, size_t len) {
+bool IthoFanComponent::on_receive(const std::vector<uint8_t> &raw) {
   if (len < 7) return false;  // minimum frame size
 
   // de‑obfuscate
