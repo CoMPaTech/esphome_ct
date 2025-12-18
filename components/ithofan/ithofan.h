@@ -7,6 +7,29 @@
 namespace esphome {
   namespace ithofan {
 
+// CC1101 command strobes (per TI datasheet)
+enum : uint8_t {
+  CC1101_SRX   = 0x34,
+  CC1101_STX   = 0x35,
+  CC1101_SIDLE = 0x36,
+  CC1101_SFRX  = 0x3A,
+  CC1101_SFTX  = 0x3B,
+};
+
+// CC1101 FIFOs and status regs
+enum : uint8_t {
+  CC1101_TXFIFO  = 0x3F,  // write-burst to load TX
+  CC1101_RXFIFO  = 0x3F,  // read-burst to read RX
+  CC1101_RXBYTES = 0x3B,  // status register; read to get RX FIFO count
+};
+
+// Helper to send a command strobe using the core API
+inline void cc1101_strobe(cc1101::CC1101Component *radio, uint8_t cmd) {
+  // Core only provides write_register; sending a strobe is a write to the strobe address
+  radio->write_register(cmd, 0x00);
+}
+
+
     enum IthoCommand : uint16_t {
       IthoUnknown = 0,
       IthoAway = 3,

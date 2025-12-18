@@ -59,16 +59,23 @@ namespace esphome {
       ESP_LOGD(TAG, "Sending command %u, repeat %u", command, repeat);
 
       // Use CC1101Component API
-      this->radio_->begin_tx();
+      #this->radio_->begin_tx();
+      cc1101_strobe(this->radio_, CC1101_SIDLE);
+      cc1101_strobe(this->radio_, CC1101_SFTX);
       for (uint32_t i = 0; i < repeat; i++) {
-        // Flush TX FIFO
-        this->radio_->strobe_command(CC1101_SFTX);
         // Write frame into FIFO
         this->radio_->write_burst(CC1101_TXFIFO, frame, sizeof(frame));
         // Start transmission
-        this->radio_->strobe_command(CC1101_STX);
+        cc1101_strobe(CC1101_STX);
       }
-      this->radio_->end_tx();
+      cc1101_strobe(this->radio_, CC1101_SIDLE);
+    }
+
+    void IthoFanComponent::begin_rx() {
+      if (!this->radio_) return;
+      cc1101_strobe(this->radio_, CC1101_SIDLE);
+      cc1101_strobe(this->radio_, CC1101_SFRX);
+      cc1101_strobe(this->radio_, CC1101_SRX);
     }
 
     bool IthoFanComponent::on_receive(uint8_t *raw, size_t len) {
@@ -104,9 +111,9 @@ namespace esphome {
 
     void IthoFanComponent::loop() {
       if (!this->radio_) return;
-        // Check RX bytes
-        uint8_t rx_bytes = this->radio_->read_register(CC1101_RXBYTES, true) & 0x7F;
-        if (rx_bytes >= 7) {
+      // Check RX bytes
+      uint8_t rx_bytes = this->radio_->read_register(CC1101_RXBYTES, true) & 0x7F;
+      if (rx_bytes >= 7) {
         uint8_t buffer[7];
         this->radio_->read_burst(CC1101_RXFIFO, buffer, 7);
         this->on_receive(buffer, 7);
