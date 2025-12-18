@@ -9,7 +9,8 @@ namespace ithofan {
 
 static const char *const TAG = "ithofan";
 static const int32_t SYMBOL = 640;
-static IthoFanComponent *IthoFanComponent::singleton_ = nullptr;
+
+IthoFanComponent *IthoFanComponent::singleton_ = nullptr;
 
 void IthoFanComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "IthoFan:");
@@ -36,7 +37,7 @@ void IthoFanComponent::set_code(uint16_t code) {
   this->preferences_.save(&this->code_);
 }
 
-void IthoFanComponent::send_command(IthoFanCommand command, uint32_t repeat) {
+void IthoFanComponent::send_command(IthoCommand command, uint32_t repeat) {
   uint8_t frame[7];
   frame[0] = 0xA7;                   // encryption key. Doesn't matter much
   frame[1] = command << 4;           // which button did  you press? The 4 LSB will be the checksum

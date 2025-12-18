@@ -1,26 +1,10 @@
 #pragma once
 
+#include "esphome/core/component.h"
 #include "esphome/core/preferences.h"
 
 namespace esphome {
 namespace ithofan {
-
-struct IthoRFDevice
-{
-  uint32_t deviceId{0};
-  RemoteTypes remType{RemoteTypes::RFTCVE};
-  //  char name[16];
-  IthoCommand lastCommand{IthoUnknown};
-  time_t timestamp;
-  uint8_t counter;
-  bool bidirectional{false};
-  int32_t co2{0xEFFF};
-  int32_t temp{0xEFFF};
-  int32_t hum{0xEFFF};
-  uint8_t pir{0xEF};
-  int32_t dewpoint{0xEFFF};
-  int32_t battery{0xEFFF};
-};  
 
 enum IthoCommand : uint16_t
 {
@@ -66,6 +50,23 @@ enum RemoteTypes : uint16_t
   RFTPIR = 0x2E10,
   ORCON15LF01 = 0x6710
 };
+
+struct IthoRFDevice
+{
+  uint32_t deviceId{0};
+  RemoteTypes remType{RemoteTypes::RFTCVE};
+  //  char name[16];
+  IthoCommand lastCommand{IthoUnknown};
+  time_t timestamp;
+  uint8_t counter;
+  bool bidirectional{false};
+  int32_t co2{0xEFFF};
+  int32_t temp{0xEFFF};
+  int32_t hum{0xEFFF};
+  uint8_t pir{0xEF};
+  int32_t dewpoint{0xEFFF};
+  int32_t battery{0xEFFF};
+};  
 
 #define F_MASK 0x03
 #define F_RQ 0x00
@@ -170,7 +171,7 @@ class IthoFanSensor {
   // virtual void update_windy(uint32_t address, bool value) {}
 };
 
-class IthoFanComponent : public Component, public remote_base::RemoteReceiverListener {
+class IthoFanComponent : public Component {
  public:
   static IthoFanComponent *singleton_;   // NEW
 
@@ -182,7 +183,7 @@ class IthoFanComponent : public Component, public remote_base::RemoteReceiverLis
   void setup() override;
   void dump_config() override;
   bool on_receive(const std::vector<uint16_t> &symbols);
-  void send_command(IthoFanCommand command, uint32_t repeat = 4);
+  void send_command(IthoCommand command, uint32_t repeat = 4);
   void set_code(uint16_t code);
   void set_tx(remote_transmitter::RemoteTransmitterComponent *tx) { this->tx_ = tx; }
   void set_rx(remote_receiver::RemoteReceiverComponent *rx) { this->rx_ = rx; }
