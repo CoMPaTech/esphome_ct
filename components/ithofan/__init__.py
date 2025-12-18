@@ -25,8 +25,8 @@ CONFIG_SCHEMA = cv.Schema({
 #    cv.Required(CONF_ADDRESS): cv.hex_uint32_t,
     cv.Optional(CONF_INITIAL_CODE, default=1): cv.uint16_t,
     cv.Optional(CONF_REPEAT, default=4): cv.uint32_t,
-    cv.Required(CONF_TX_ID): cv.use_id(cg.RemoteTransmitterComponent),
-    cv.Required(CONF_RX_ID): cv.use_id(cg.RemoteReceiverComponent),
+    cv.Required(CONF_TX_ID): cv.use_id(RemoteTransmitterComponent),
+    cv.Required(CONF_RX_ID): cv.use_id(RemoteReceiverComponent),
 })
 
 
