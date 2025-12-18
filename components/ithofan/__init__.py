@@ -4,6 +4,13 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
+# Import the transmitter/receiver component classes
+remote_transmitter_ns = cg.esphome_ns.namespace("remote_transmitter")
+RemoteTransmitterComponent = remote_transmitter_ns.class_("RemoteTransmitterComponent")
+
+remote_receiver_ns = cg.esphome_ns.namespace("remote_receiver")
+RemoteReceiverComponent = remote_receiver_ns.class_("RemoteReceiverComponent")
+
 ithofan_ns = cg.esphome_ns.namespace("ithofan")
 IthoFanComponent = ithofan_ns.class_("IthoFanComponent", cg.Component)
 
