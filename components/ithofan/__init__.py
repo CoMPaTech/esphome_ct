@@ -34,7 +34,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    cg.add(var.set_address(config[CONF_ADDRESS]))
+#    cg.add(var.set_address(config[CONF_ADDRESS]))
     cg.add(var.set_code(config[CONF_INITIAL_CODE]))
 
 #    tx = await cg.get_variable(config[CONF_TX_ID])
