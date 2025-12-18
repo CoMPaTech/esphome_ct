@@ -1,8 +1,6 @@
 #pragma once
 
 #include "esphome/core/preferences.h"
-#include "esphome/components/remote_transmitter/remote_transmitter.h"
-#include "esphome/components/remote_receiver/remote_receiver.h"
 
 namespace esphome {
 namespace ithofan {
@@ -183,7 +181,7 @@ class IthoFanComponent : public Component, public remote_base::RemoteReceiverLis
   float get_setup_priority() const override { return setup_priority::LATE; }
   void setup() override;
   void dump_config() override;
-  bool on_receive(remote_base::RemoteReceiveData data) override;
+  bool on_receive(const std::vector<uint16_t> &symbols);
   void send_command(IthoFanCommand command, uint32_t repeat = 4);
   void set_code(uint16_t code);
   void set_tx(remote_transmitter::RemoteTransmitterComponent *tx) { this->tx_ = tx; }

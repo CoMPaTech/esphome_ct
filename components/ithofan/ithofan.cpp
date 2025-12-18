@@ -103,63 +103,78 @@ void IthoFanComponent::send_command(IthoFanCommand command, uint32_t repeat) {
   call.perform();
 }
 
-bool IthoFanComponent::on_receive(remote_base::RemoteReceiveData data) {
+bool IthoFanComponent::on_receive(const std::vector<uint16_t> &symbols) {
   uint8_t sync_count = 0;
-  while (true) {
-    if (data.expect_item(SYMBOL * 4, SYMBOL * 4)) {
+  size_t idx = 0;
+
+  // hardware sync: look for repeated SYMBOL*4 marks/spaces
+  while (idx + 1 < symbols.size()) {
+    if (symbols[idx] == SYMBOL * 4 && symbols[idx + 1] == SYMBOL * 4) {
       sync_count++;
-    } else if (data.expect_mark(4550)) {
+      idx += 2;
+    } else if (symbols[idx] == 4550) {
+      // software sync mark
+      idx++;
       break;
     } else {
-      return true;
+      return false;  // unexpected pattern
     }
   }
+
   if (sync_count < 2) {
-    return true;
+    return false;
   }
-  data.expect_space(SYMBOL);
 
-  uint8_t frame[7];
+  // expect a space after sync
+  if (idx >= symbols.size() || symbols[idx] != SYMBOL) {
+    return false;
+  }
+  idx++;
+
+  // decode 7‑byte frame
+  uint8_t frame[7] = {0};
   for (uint8_t &byte : frame) {
-    for (uint32_t i = 0; i < 8; i++) {
-      byte <<= 1;
-      if (data.expect_mark(SYMBOL) || data.expect_mark(SYMBOL * 2)) {
-        data.expect_space(SYMBOL);
-        byte |= 0;
-      } else if (data.expect_space(SYMBOL) || data.expect_space(SYMBOL * 2)) {
-        data.expect_mark(SYMBOL);
-        byte |= 1;
+    for (int bit = 0; bit < 8; bit++) {
+      if (idx + 1 >= symbols.size()) return false;
+      // interpret mark/space pairs
+      if (symbols[idx] == SYMBOL && symbols[idx + 1] == SYMBOL) {
+        byte = (byte << 1) | 1;
       } else {
-        return true;
+        byte = (byte << 1);
       }
+      idx += 2;
     }
   }
 
-  for (uint8_t i = 6; i >= 1; i--) {
+  // de‑obfuscate
+  for (int i = 6; i >= 1; i--) {
     frame[i] ^= frame[i - 1];
   }
 
+  // CRC check
   uint8_t crc = 0;
-  for (uint8_t i = 0; i < 7; i++) {
+  for (int i = 0; i < 7; i++) {
     crc ^= frame[i];
     crc ^= frame[i] >> 4;
   }
-  if ((crc & 0xF) == 0) {
-    uint8_t command = frame[1] >> 4;
-    uint16_t code = (frame[2] << 8) | frame[3];
-    uint32_t address = (frame[4] << 16) | (frame[5] << 8) | frame[6];
-    ESP_LOGD(TAG, "Received: command: %" PRIx8 ", code: %" PRIu16 ", address %" PRIx32,
-             command, code, address);
-    if (command == SOMFY_SENSOR) {
-      for (auto *sensor : this->sensors_) {
-        sensor->update_windy(address, (code & 1) != 0);
-        sensor->update_sunny(address, (code & 2) != 0);
-      }
-    }
-  }
+  if ((crc & 0xF) != 0) return false;
+
+  // extract fields
+  uint8_t command = frame[1] >> 4;
+  uint16_t code   = (frame[2] << 8) | frame[3];
+  uint32_t addr   = (frame[4] << 16) | (frame[5] << 8) | frame[6];
+
+  ESP_LOGD(TAG, "Received: cmd=%" PRIu8 ", code=%" PRIu16 ", addr=%" PRIu32,
+           command, code, addr);
+
+  // update internal state
+  this->lastCommand = static_cast<IthoCommand>(command);
+  this->code_ = code;
+  this->address_ = addr;
 
   return true;
 }
+
 
 }  // namespace ithofan
 }  // namespace esphome
