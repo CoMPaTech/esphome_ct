@@ -1,3 +1,4 @@
+#include <set>
 #include "esphome/components/fan/fan.h"
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
