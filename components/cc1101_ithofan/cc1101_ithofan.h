@@ -1,3 +1,4 @@
+#include "esphome.h"
 #include "esphome/components/cc1101/cc1101.h"
 
 namespace esphome {
