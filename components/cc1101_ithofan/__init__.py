@@ -1,5 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+import esphome.components.cc1101 as cc1101
 from esphome import pins
 #from esphome.const import CONF_ID, CONF_CS_PIN, CONF_GDO0_PIN, CONF_FREQUENCY, CONF_PACKET_LENGTH
 
