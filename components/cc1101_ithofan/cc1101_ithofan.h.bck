@@ -18,7 +18,7 @@ enum IthoCommand : uint8_t {
 class IthoCC1101 : public cc1101::CC1101Component {
  public:
   uint16_t rolling_code{1};
-  uint32_t address{0x000000};  // default to zero
+  uint32_t address{0x000000};  // default to zero, can be set
 
   void send_command(IthoCommand cmd) {
     uint8_t frame[7];
@@ -44,12 +44,8 @@ class IthoCC1101 : public cc1101::CC1101Component {
 
     rolling_code++;
 
-    // Use the action class directly
     std::vector<uint8_t> data(frame, frame + 7);
-    cc1101::SendPacketAction<> act;   // no template args
-    act.set_parent(this);             // bind to this radio
-    act.set_data(data);               // copy the payload
-    act.play();                       // send now
+    this->send_packet_(data);
   }
 };
 
