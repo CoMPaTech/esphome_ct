@@ -25,6 +25,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
+    await cc1101.register_cc1101(var)
+
     # Convert pin configs into expressions
     cs = await cg.gpio_pin_expression(config[CONF_CS_PIN])
     gdo0 = await cg.gpio_pin_expression(config[CONF_GDO0_PIN])
