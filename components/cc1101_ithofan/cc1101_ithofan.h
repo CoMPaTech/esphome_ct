@@ -20,6 +20,11 @@ class IthoCC1101 : public cc1101::CC1101Component {
   uint16_t rolling_code{1};
   uint32_t address{0x000000};  // default to zero, can be set
 
+  void set_cs_pin(GPIOPin *pin) { this->cs_pin_ = pin; }
+  void set_gdo0_pin(GPIOPin *pin) { this->gdo0_pin_ = pin; }
+  void set_frequency(uint32_t freq) { this->frequency_ = freq; }
+  void set_packet_length(uint8_t len) { this->packet_length_ = len; }
+
   void send_command(IthoCommand cmd) {
     uint8_t frame[7];
     frame[0] = 0xA7;
