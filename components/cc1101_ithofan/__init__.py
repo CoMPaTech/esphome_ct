@@ -16,7 +16,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(IthoCC1101),
     cv.Required(CONF_CS_PIN): pins.gpio_output_pin_schema,
     cv.Required(CONF_GDO0_PIN): pins.gpio_input_pin_schema,
-    cv.Required(CONF_FREQUENCY): cv.float_range(min=300_000_000, max=1_000_000_000),
+    cv.Required(CONF_FREQUENCY): cv.int_range(min=300_000_000, max=1_000_000_000),
     cv.Optional(CONF_PACKET_LENGTH, default=7): cv.int_range(min=1, max=64)
 })
 
