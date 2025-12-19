@@ -44,6 +44,7 @@ class IthoCC1101 : public cc1101::CC1101Component {
 
     rolling_code++;
 
+    ESP_LOGI("itho", "Sending command %d, rolling_code=%u", cmd, rolling_code);
     // Use the action class directly
     std::vector<uint8_t> data(frame, frame + 7); 
     this->transmit_packet(data);
