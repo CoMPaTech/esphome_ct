@@ -23,8 +23,15 @@ CONFIG_SCHEMA = cv.Schema({
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    cg.add(var.set_cs_pin(config[CONF_CS_PIN]))
-    cg.add(var.set_gdo0_pin(config[CONF_GDO0_PIN]))
+
+    # Convert pin configs into expressions
+    cs = await cg.gpio_pin_expression(config[CONF_CS_PIN])
+    gdo0 = await cg.gpio_pin_expression(config[CONF_GDO0_PIN])
+
+    cg.add(var.set_cs_pin(cs))
+    cg.add(var.set_gdo0_pin(gdo0))
+
     cg.add(var.set_frequency(config[CONF_FREQUENCY]))
     cg.add(var.set_packet_length(config[CONF_PACKET_LENGTH]))
+
 
