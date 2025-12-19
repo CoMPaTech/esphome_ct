@@ -5,6 +5,12 @@ from esphome.const import CONF_ID, CONF_CS_PIN, CONF_GDO0_PIN, CONF_FREQUENCY, C
 cc1101_ns = cg.esphome_ns.namespace("itho_cc1101")
 IthoCC1101 = cc1101_ns.class_("IthoCC1101", cg.Component)
 
+CONF_ID = "id"
+CONF_CS_PIN = "cs_pin"
+CONF_GD0_PIN = "gd0_pin"
+CONF_FREQUENCY = "frequency"
+CONF_PACKET_LENGTH = "packet_length"
+
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(IthoCC1101),
     cv.Required(CONF_CS_PIN): cv.pin,
