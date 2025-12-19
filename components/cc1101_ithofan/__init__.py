@@ -1,5 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+from esphome import pins
 #from esphome.const import CONF_ID, CONF_CS_PIN, CONF_GDO0_PIN, CONF_FREQUENCY, CONF_PACKET_LENGTH
 
 cc1101_ns = cg.esphome_ns.namespace("itho_cc1101")
@@ -13,10 +14,10 @@ CONF_PACKET_LENGTH = "packet_length"
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(IthoCC1101),
-    cv.Required(CONF_CS_PIN): cv.pin,
-    cv.Required(CONF_GDO0_PIN): cv.pin,
-    cv.Required(CONF_FREQUENCY): cv.frequency,
-    cv.Required(CONF_PACKET_LENGTH): cv.int_range(min=1, max=64),
+    cv.Required(CONF_CS_PIN): pins.gpio_output_pin_schema,
+    cv.Required(CONF_GDO0_PIN): pins.gpio_input_pin_schema,
+    cv.Required(CONF_FREQUENCY): cv.int_range(min=300_000_000, max=1_000_000_000),
+    cv.Optional(CONF_PACKET_LENGTH, default=7): cv.int_range(min=1, max=64)
 })
 
 async def to_code(config):
