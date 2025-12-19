@@ -45,7 +45,7 @@ class IthoCC1101 : public cc1101::CC1101Component {
     rolling_code++;
 
     std::vector<uint8_t> data(frame, frame + 7);
-    this->send_packet_(data);
+    this->send_packet(data);
   }
 };
 
