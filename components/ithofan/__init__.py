@@ -18,7 +18,7 @@ IthoFanComponent = ithofan_ns.class_("IthoFanComponent", fan.Fan, cg.Component)
 cc1101_ns = cg.esphome_ns.namespace("cc1101")
 CC1101Component = cc1101_ns.class_("CC1101Component", cg.Component)
 
-CONFIG_SCHEMA = fan.FAN_SCHEMA.extend(
+CONFIG_SCHEMA = fan._FAN_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(IthoFanComponent),
         cv.Required(CONF_ADDRESS): cv.hex_uint32_t,
