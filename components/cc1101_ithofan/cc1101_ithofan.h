@@ -45,11 +45,8 @@ class IthoCC1101 : public cc1101::CC1101Component {
     rolling_code++;
 
     // Use the action class directly
-    std::vector<uint8_t> data(frame, frame + 7);
-    cc1101::SendPacketAction<> act;   // no template args
-    act.set_parent(this);             // bind to this radio
-    act.set_data_static(data);               // copy the payload
-    act.play();                       // send now
+    std::vector<uint8_t> data(frame, frame + 7); 
+    this->transmit_packet(data);
   }
 };
 
