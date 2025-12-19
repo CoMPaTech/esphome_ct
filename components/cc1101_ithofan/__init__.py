@@ -4,6 +4,8 @@ import esphome.components.cc1101 as cc1101
 from esphome import pins
 #from esphome.const import CONF_ID, CONF_CS_PIN, CONF_GDO0_PIN, CONF_FREQUENCY, CONF_PACKET_LENGTH
 
+DEPENDENCIES = ["cc1101"]
+
 cc1101_ns = cg.esphome_ns.namespace("itho_cc1101") 
 IthoCC1101 = cc1101_ns.class_("IthoCC1101", cc1101.CC1101Component)
 
