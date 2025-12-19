@@ -8,7 +8,7 @@ IthoCC1101 = cc1101_ns.class_("IthoCC1101", cg.Component)
 
 CONF_ID = "id"
 CONF_CS_PIN = "cs_pin"
-CONF_GD0_PIN = "gd0_pin"
+CONF_GDO0_PIN = "gdo0_pin"
 CONF_FREQUENCY = "frequency"
 CONF_PACKET_LENGTH = "packet_length"
 
