@@ -20,7 +20,6 @@ class IthoCC1101 : public cc1101::CC1101Component {
   uint16_t rolling_code{1};
   uint32_t address{0x000000};  // default to zero
 
-  ESP_LOGI("itho", "starting")
   void send_command(IthoCommand cmd) {
     uint8_t frame[7];
     frame[0] = 0xA7;
