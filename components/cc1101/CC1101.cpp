@@ -28,7 +28,12 @@ inline void CC1101::deselect(void) {
 	digitalWrite(SS, HIGH);
 }
 
-bool CC1101::spi_waitMiso(uint32_t timeout_us) {
+void CC1101::spi_waitMiso()
+{
+    while(digitalRead(MISO) == HIGH) yield();
+}
+/*
+void CC1101::spi_waitMiso(uint32_t timeout_us) {
   uint32_t start = micros();
   while (digitalRead(MISO) == HIGH) {
     yield();
@@ -36,6 +41,7 @@ bool CC1101::spi_waitMiso(uint32_t timeout_us) {
   }
   return true;
 }
+*/
 
 void CC1101::init()
 {

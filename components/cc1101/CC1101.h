@@ -172,7 +172,7 @@ class CC1101
 		~CC1101();
 	
 		//spi
-		bool spi_waitMiso();
+		void spi_waitMiso();
 	
 		//cc1101
 		void init();
