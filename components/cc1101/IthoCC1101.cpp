@@ -366,10 +366,13 @@ void  IthoCC1101::initReceiveMessage2(IthoMessageType expectedMessageType)
 	writeCommand(CC1101_SRX); //switch to RX state
 
 	// Check that the RX state has been entered
+	uint32_t start = millis();
 	while (((marcState = readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_RX)
 	{
 		if (marcState == CC1101_MARCSTATE_RXFIFO_OVERFLOW) // RX_OVERFLOW
 			writeCommand(CC1101_SFRX); //flush RX buffer
+                yield(); // feed the wdt
+                if (millis() - start > 50) { break; }
 	}
 }
 
