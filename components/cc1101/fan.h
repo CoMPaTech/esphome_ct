@@ -37,6 +37,8 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   static constexpr uint8_t INVALID_SPEED = 255;
   uint8_t Speed = INVALID_SPEED;
   uint8_t LastSpeed = INVALID_SPEED;
+  bool reset_due_{false};
+  uint16_t reset_seconds_{0};
   //static CC1101Fan *instance_;
 };
 
