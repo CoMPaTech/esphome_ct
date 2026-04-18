@@ -231,9 +231,10 @@ uint8_t CC1101::receiveData(CC1101Packet* packet, uint8_t length)
 {
 	uint8_t rxBytes = 0;
 	uint32_t wait_start = millis();
+	const uint32_t rx_wait_timeout_ms = 4;
 
 	// Keep this wait short so we can return quickly to the main loop on ESP8266.
-	while (millis() - wait_start <= 4)
+	while (millis() - wait_start <= rx_wait_timeout_ms)
 	{
 		const uint8_t rxStatus = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
 		if (rxStatus & CC1101_BITS_RX_FIFO_OVERFLOW)

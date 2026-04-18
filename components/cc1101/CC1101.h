@@ -171,9 +171,12 @@ class CC1101
 	public:
 		CC1101();
 		~CC1101();
+		// Keep wait short for ESP8266: long enough for normal CC1101 CS/MISO release,
+		// short enough to avoid watchdog starvation when the radio is wedged.
+		static constexpr uint32_t SPI_WAIT_MISO_TIMEOUT_US = 5000;
 	
 		//spi
-		bool spi_waitMiso(uint32_t timeout_us = 5000);
+		bool spi_waitMiso(uint32_t timeout_us = SPI_WAIT_MISO_TIMEOUT_US);
 	
 		//cc1101
 		void init();
