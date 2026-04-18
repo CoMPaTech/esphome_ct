@@ -273,10 +273,17 @@ void CC1101::sendData(CC1101Packet *packet)
 	}
 
 	//wait until transmission is finished (TXOFF_MODE is expected to be set to 0/IDLE or TXFIFO_UNDERFLOW)
-	do
-	{
-		MarcState = (readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE);
+        uint32_t wait_start = millis();
+        do {
+          MarcState = (readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE);
 //		if (MarcState == CC1101_MARCSTATE_TXFIFO_UNDERFLOW) Serial.print(F("TXFIFO_UNDERFLOW occured in sendData() \n"));
-	}
-  	while((MarcState != CC1101_MARCSTATE_IDLE) && (MarcState != CC1101_MARCSTATE_TXFIFO_UNDERFLOW));
+          yield();  // feed WDT
+        
+          // bail out if radio misbehaves
+          if (millis() - wait_start > 50) {
+            break;
+          }
+        } while ((MarcState != CC1101_MARCSTATE_IDLE) &&
+                 (MarcState != CC1101_MARCSTATE_TXFIFO_UNDERFLOW));
+
 }
