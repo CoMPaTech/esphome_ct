@@ -7,6 +7,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+static constexpr uint32_t ITHO_RX_STATE_TIMEOUT_MS = 50;
+
 // default constructor
 IthoCC1101::IthoCC1101(uint8_t counter, uint8_t sendTries) : CC1101()
 {
@@ -282,7 +284,7 @@ void IthoCC1101::initReceive()
 		uint32_t start = millis();
 		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_IDLE) {
 			yield();
-			if (millis() - start > 50) {
+			if (millis() - start > ITHO_RX_STATE_TIMEOUT_MS) {
 				// Avoid unbounded spin; leave radio in a known state.
 				writeCommand(CC1101_SIDLE);
 				writeCommand(CC1101_SFRX);
@@ -338,7 +340,7 @@ void IthoCC1101::initReceive()
 		uint32_t start = millis();
 		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_IDLE) {
 			yield();
-			if (millis() - start > 50) {
+			if (millis() - start > ITHO_RX_STATE_TIMEOUT_MS) {
 				// Avoid unbounded spin; leave radio in a known state.
 				writeCommand(CC1101_SIDLE);
 				writeCommand(CC1101_SFRX);
@@ -362,7 +364,7 @@ void IthoCC1101::initReceive()
 		uint32_t start = millis();
 		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_RX) {
 			yield();
-			if (millis() - start > 50) {
+			if (millis() - start > ITHO_RX_STATE_TIMEOUT_MS) {
 				// Avoid unbounded RX wait; clean and return.
 				writeCommand(CC1101_SIDLE);
 				writeCommand(CC1101_SFRX);
@@ -407,7 +409,7 @@ void  IthoCC1101::initReceiveMessage2(IthoMessageType expectedMessageType)
 		if ((marcState & CC1101_BITS_MARCSTATE) == CC1101_MARCSTATE_RXFIFO_OVERFLOW) // RX_OVERFLOW
 			writeCommand(CC1101_SFRX); //flush RX buffer
 		yield(); // feed the wdt
-		if (millis() - start > 50) {
+		if (millis() - start > ITHO_RX_STATE_TIMEOUT_MS) {
 			// Prevent endless loop when RX cannot be entered.
 			writeCommand(CC1101_SIDLE);
 			writeCommand(CC1101_SFRX);
