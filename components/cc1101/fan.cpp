@@ -13,7 +13,7 @@ void ITHOcheck();
 // extra for interrupt handling
 //bool ITHOhasPacket = false;
 Ticker ITHOticker;
-Ticker reset_timer_;
+//Ticker reset_timer_;
 int LastIDindex = 0;
 int OldLastIDindex = 0;
 long LastPublish=0; 
@@ -219,7 +219,10 @@ void CC1101Fan::startResetTimer(uint16_t seconds) {
     ESP_LOGD("cc1101_fan", "Timer was active and has been canceled from new timer");
   }
   timer_active_ = true;
-  reset_timer_.once(seconds, [this, seconds]() { this->resetFanSpeed(seconds); });
+  //reset_timer_.once(seconds, [this, seconds]() { this->resetFanSpeed(seconds); });
+  this->set_timeout(seconds * 1000, [this]() {
+    this->reset_due_ = true;
+  });
   ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
   this->publish_state();
 }
