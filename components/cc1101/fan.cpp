@@ -61,7 +61,7 @@ void CC1101Fan::setup() {
 //}
 
 void CC1101Fan::update() {
-  CC1101Fan::ITHOcheck();
+  //CC1101Fan::ITHOcheck();
 
   if (reset_due_) {
     reset_due_ = false;
