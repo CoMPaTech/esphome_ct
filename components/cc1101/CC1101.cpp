@@ -117,19 +117,22 @@ RXBYTES when receiving or TXBYTES when transmitting, and WORTIME1/WORTIME0 at an
 //uint8_t CC1101::readRegisterWithSyncProblem(uint8_t address, uint8_t registerType)
 uint8_t /* ICACHE_RAM_ATTR */ CC1101::readRegisterWithSyncProblem(uint8_t address, uint8_t registerType)
 {
-	uint8_t value1, value2;	
+	uint8_t value1 = readRegister(address | registerType);
+	uint32_t start = millis();
 	
-	value1 = readRegister(address | registerType);
-	
-	//if two consecutive reads gives us the same result then we know we are ok
-	do 
-	{
-		value2 = value1;
-		value1 = readRegister(address | registerType);
+	while (true) {
+	    uint8_t value2 = readRegister(address | registerType);
+	    if (value2 == value1) {
+              return value2;
+	    }
+	    value1 = value2;
+
+	    yield();
+
+	    if (millis() - start > 10 ) {
+              return value1;
+            }
 	} 
-	while (value1 != value2);
-	
-	return value1;
 }
 
 //registerType = CC1101_CONFIG_REGISTER or CC1101_STATUS_REGISTER
@@ -249,7 +252,13 @@ void CC1101::sendData(CC1101Packet *packet)
 		while (index < packet->length)
 		{
 			//check if there is free space in the fifo
-			while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2));
+                        uint32_t wait_start = millis()
+			while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2)) {
+                          yield();
+                          if (millis() - wait_start > 20 ) {
+                            break;
+                          }
+                        }
 			
 			//calculate how many bytes we can send
 			length = (CC1101_DATA_LEN - txStatus);
