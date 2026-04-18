@@ -27,6 +27,11 @@ uint16_t Time1 = 10*60;
 uint16_t Time2 = 20*60;
 uint16_t Time3 = 30*60;
 
+float CC1101Fan::get_setup_priority() const {
+    // Run after Wi-Fi (which uses priority 200)
+    return esphome::setup_priority::AFTER_WIFI;
+}
+
 void CC1101Fan::setup() {
   auto restore = this->restore_state_();
   if (restore.has_value()) {
@@ -64,8 +69,6 @@ void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
  
-  if (!::App.is_connected()) return;
-
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
     ITHOcheck();
