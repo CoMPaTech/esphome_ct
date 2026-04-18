@@ -113,6 +113,7 @@
 
 /* Masks to retrieve status bit */
 #define CC1101_BITS_TX_FIFO_UNDERFLOW			0x80
+#define CC1101_BITS_RX_FIFO_OVERFLOW			0x80
 #define CC1101_BITS_RX_BYTES_IN_FIFO			0x7F
 #define CC1101_BITS_MARCSTATE					0x1F
 

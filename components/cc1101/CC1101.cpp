@@ -236,7 +236,7 @@ uint8_t CC1101::receiveData(CC1101Packet* packet, uint8_t length)
 	while (millis() - wait_start <= 4)
 	{
 		const uint8_t rxStatus = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
-		if (rxStatus & CC1101_BITS_TX_FIFO_UNDERFLOW)
+		if (rxStatus & CC1101_BITS_RX_FIFO_OVERFLOW)
 		{
 			// RX FIFO overflow bit set in RXBYTES register.
 			writeCommand(CC1101_SIDLE);
@@ -294,6 +294,10 @@ void CC1101::sendData(CC1101Packet *packet)
 	uint8_t index = 0;
 	uint8_t txStatus, MarcState;
 	uint8_t length;
+	auto abort_tx = [&]() {
+		writeCommand(CC1101_SIDLE);
+		writeCommand(CC1101_SFTX);
+	};
 	
 	writeCommand(CC1101_SIDLE);		//idle
 
@@ -337,8 +341,7 @@ void CC1101::sendData(CC1101Packet *packet)
 			// Ensure forward progress. If FIFO space never becomes available, abort safely.
 			if (txStatus > (CC1101_DATA_LEN - 2))
 			{
-				writeCommand(CC1101_SIDLE);
-				writeCommand(CC1101_SFTX);
+				abort_tx();
 				return;
 			}
 			
@@ -349,8 +352,7 @@ void CC1101::sendData(CC1101Packet *packet)
 			if (length == 0)
 			{
 				// Avoid zero-progress loop when radio reports no writable bytes.
-				writeCommand(CC1101_SIDLE);
-				writeCommand(CC1101_SFTX);
+				abort_tx();
 				return;
 			}
 			
@@ -371,8 +373,7 @@ void CC1101::sendData(CC1101Packet *packet)
 
 		// Bail out if radio misbehaves and clean up so later TX can recover.
 		if (millis() - wait_start > 50) {
-			writeCommand(CC1101_SIDLE);
-			writeCommand(CC1101_SFTX);
+			abort_tx();
 			return;
 		}
 	} while ((MarcState != CC1101_MARCSTATE_IDLE) &&
@@ -380,8 +381,7 @@ void CC1101::sendData(CC1101Packet *packet)
 
 	if (MarcState == CC1101_MARCSTATE_TXFIFO_UNDERFLOW)
 	{
-		writeCommand(CC1101_SIDLE);
-		writeCommand(CC1101_SFTX);
+		abort_tx();
 	}
 
 }
