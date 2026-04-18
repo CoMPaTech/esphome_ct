@@ -23,6 +23,8 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void send_other_command(uint8_t other_command);
 //  static void ITHOinterrupt();
   void ITHOcheck();
+  bool radio_initialized_ = false;
+  uint32_t boot_time_ = 0;
 
  protected:
   void control(const fan::FanCall &call) override;

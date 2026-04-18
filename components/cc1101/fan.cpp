@@ -61,7 +61,27 @@ void CC1101Fan::setup() {
 //}
 
 void CC1101Fan::update() {
+  static uint32_t last_rf_check = 0;
+  uint32_t now = millis();
+
+  if (millis() - boot_time_ < 5000) {
+    return;
+  }
+
+  if (!radio_initialized_) {
+    rf.init();
+    this->data_pin_->setup();
+    this->data_pin_->pin_mode(gpio::FLAG_INPUT);
+    rf.initReceive();
+    radio_initialized_ = true;
+    return;  // do not process packets on the same cycle
+  }
+ 
+  if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
+    last_rf_check = now;
     CC1101Fan::ITHOcheck();
+  }
+
 
 /*
     // Only publish if the state has changed
