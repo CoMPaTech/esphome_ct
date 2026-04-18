@@ -80,8 +80,8 @@ void CC1101Fan::publish_state() {
   uint8_t new_speed = this->Speed;
 
   if (this->map_off_to_zero_ && this->Speed == 0) {
-    new_state = false
-    new_speed = 0
+    new_state = false;
+    new_speed = 0;
   }
 
   bool changed = (this->state != new_state) || (this->speed != new_speed);
