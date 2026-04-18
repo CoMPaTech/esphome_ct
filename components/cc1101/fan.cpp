@@ -6,6 +6,10 @@
 namespace esphome {
 namespace cc1101fan {
 
+#ifndef CC1101_FAN_RX_DEBUG_IDS
+#define CC1101_FAN_RX_DEBUG_IDS 0
+#endif
+
 IthoCC1101 rf;
 //void ITHOinterrupt() IRAM_ATTR;
 void ITHOcheck();
@@ -257,9 +261,11 @@ void CC1101Fan::ITHOcheck() {
     IthoCommand cmd = rf.getLastCommand();
     IthoPacket pkt = rf.getLastPacket();
     LastID = rf.getLastIDstr();
-    ESP_LOGD("c1101_fan", "Debug - RemoteID1: %s", id_to_hex(pkt.deviceId1, sizeof(pkt.deviceId1)));
-    ESP_LOGD("c1101_fan", "Debug - RemoteID2: %s", id_to_hex(pkt.deviceId2, sizeof(pkt.deviceId2)));
+#if CC1101_FAN_RX_DEBUG_IDS
+    ESP_LOGD("c1101_fan", "Debug - RemoteID1: %s", id_to_hex(pkt.deviceId1, sizeof(pkt.deviceId1)).c_str());
+    ESP_LOGD("c1101_fan", "Debug - RemoteID2: %s", id_to_hex(pkt.deviceId2, sizeof(pkt.deviceId2)).c_str());
     ESP_LOGD("c1101_fan", "Debug - LastID: %s", LastID.c_str());
+#endif
     switch (cmd) {
       case IthoUnknown:
         break;

@@ -91,7 +91,7 @@ void IthoCC1101::initSendMessage1()
 	writeRegister(CC1101_CHANNR ,0x00);		//00000000
 	writeRegister(CC1101_DEVIATN ,0x40);	//01000000
 	writeRegister(CC1101_FREND0 ,0x17);		//00010111	use index 7 in PA table
-	writeRegister(CC1101_MCSM0 ,0x18);		//00011000	PO timeout Approx. 146µs - 171µs, Auto calibrate When going from IDLE to RX or TX (or FSTXON)
+	writeRegister(CC1101_MCSM0 ,0x18);		//00011000	PO timeout Approx. 146ï¿½s - 171ï¿½s, Auto calibrate When going from IDLE to RX or TX (or FSTXON)
 	writeRegister(CC1101_FSCAL3 ,0xA9);		//10101001
 	writeRegister(CC1101_FSCAL2 ,0x2A);		//00101010
 	writeRegister(CC1101_FSCAL1 ,0x00);		//00000000
@@ -179,7 +179,7 @@ void IthoCC1101::initSendMessage2(IthoCommand command)
 	writeRegister(CC1101_CHANNR ,0x00);		//00000000
 	writeRegister(CC1101_DEVIATN ,0x50);	//difference compared to message1
 	writeRegister(CC1101_FREND0 ,0x17);		//00010111	use index 7 in PA table
-	writeRegister(CC1101_MCSM0 ,0x18);		//00011000	PO timeout Approx. 146µs - 171µs, Auto calibrate When going from IDLE to RX or TX (or FSTXON)
+	writeRegister(CC1101_MCSM0 ,0x18);		//00011000	PO timeout Approx. 146ï¿½s - 171ï¿½s, Auto calibrate When going from IDLE to RX or TX (or FSTXON)
 	writeRegister(CC1101_FSCAL3 ,0xA9);		//10101001
 	writeRegister(CC1101_FSCAL2 ,0x2A);		//00101010
 	writeRegister(CC1101_FSCAL1 ,0x00);		//00000000
@@ -278,7 +278,19 @@ void IthoCC1101::initReceive()
 	writeCommand(CC1101_SCAL);
 
 	//wait for calibration to finish
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) yield();
+	{
+		uint32_t start = millis();
+		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_IDLE) {
+			yield();
+			if (millis() - start > 50) {
+				// Avoid unbounded spin; leave radio in a known state.
+				writeCommand(CC1101_SIDLE);
+				writeCommand(CC1101_SFRX);
+				writeCommand(CC1101_SFTX);
+				return;
+			}
+		}
+	}
 
 	writeRegister(CC1101_FSCAL2 ,0x00);
 	writeRegister(CC1101_MCSM0 ,0x18);			//no auto calibrate
@@ -322,7 +334,19 @@ void IthoCC1101::initReceive()
 	writeCommand(CC1101_SCAL);
 
 	//wait for calibration to finish
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) yield();
+	{
+		uint32_t start = millis();
+		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_IDLE) {
+			yield();
+			if (millis() - start > 50) {
+				// Avoid unbounded spin; leave radio in a known state.
+				writeCommand(CC1101_SIDLE);
+				writeCommand(CC1101_SFRX);
+				writeCommand(CC1101_SFTX);
+				return;
+			}
+		}
+	}
 
 	writeRegister(CC1101_MCSM0 ,0x18);			//no auto calibrate
 	
@@ -334,7 +358,18 @@ void IthoCC1101::initReceive()
 
 	writeCommand(CC1101_SRX);
 	
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_RX) yield();
+	{
+		uint32_t start = millis();
+		while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_RX) {
+			yield();
+			if (millis() - start > 50) {
+				// Avoid unbounded RX wait; clean and return.
+				writeCommand(CC1101_SIDLE);
+				writeCommand(CC1101_SFRX);
+				return;
+			}
+		}
+	}
 	
 //	initReceiveMessage2(IthoUnknown);
 	initReceiveMessage2(ithomsg_unknown);
@@ -369,10 +404,16 @@ void  IthoCC1101::initReceiveMessage2(IthoMessageType expectedMessageType)
 	uint32_t start = millis();
 	while (((marcState = readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) & CC1101_BITS_MARCSTATE) != CC1101_MARCSTATE_RX)
 	{
-		if (marcState == CC1101_MARCSTATE_RXFIFO_OVERFLOW) // RX_OVERFLOW
+		if ((marcState & CC1101_BITS_MARCSTATE) == CC1101_MARCSTATE_RXFIFO_OVERFLOW) // RX_OVERFLOW
 			writeCommand(CC1101_SFRX); //flush RX buffer
-                yield(); // feed the wdt
-                if (millis() - start > 50) { break; }
+		yield(); // feed the wdt
+		if (millis() - start > 50) {
+			// Prevent endless loop when RX cannot be entered.
+			writeCommand(CC1101_SIDLE);
+			writeCommand(CC1101_SFRX);
+			writeCommand(CC1101_SRX);
+			break;
+		}
 	}
 }
 
@@ -997,4 +1038,3 @@ String IthoCC1101::getLastIDstr() {
 	}
 	return str;
 }
-

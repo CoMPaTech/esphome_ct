@@ -52,10 +52,18 @@ void CC1101::reset()
 	delayMicroseconds(45);
 	select();
 
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Avoid a deadlock when MISO is stuck high.
+		deselect();
+		return;
+	}
 	SPI.transfer(CC1101_SRES);
 	delay(10);
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Leave chip deselected; higher layers can retry init.
+		deselect();
+		return;
+	}
 	deselect();
 }
 
@@ -64,7 +72,12 @@ uint8_t CC1101::writeCommand(uint8_t command)
 	uint8_t result;
 	
 	select();
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Recovery for stuck SPI bus.
+		deselect();
+		reset();
+		return 0;
+	}
 	result = SPI.transfer(command);
 	deselect();
 	
@@ -74,7 +87,12 @@ uint8_t CC1101::writeCommand(uint8_t command)
 void CC1101::writeRegister(uint8_t address, uint8_t data) 
 {
 	select();
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Recovery for stuck SPI bus.
+		deselect();
+		reset();
+		return;
+	}
 	SPI.transfer(address);
 	SPI.transfer(data);
 	deselect();
@@ -85,7 +103,12 @@ uint8_t CC1101::readRegister(uint8_t address)
 	uint8_t val;
   
 	select();
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Recovery for stuck SPI bus.
+		deselect();
+		reset();
+		return 0;
+	}
 	SPI.transfer(address);
 	val = SPI.transfer(0);
 	deselect();
@@ -98,7 +121,12 @@ uint8_t CC1101::readRegisterMedian3(uint8_t address)
   uint8_t val, val1, val2, val3;
 
   select();
-  spi_waitMiso();
+  if (!spi_waitMiso()) {
+    // Recovery for stuck SPI bus.
+    deselect();
+    reset();
+    return 0;
+  }
   SPI.transfer(address);
   val1 = SPI.transfer(0);
   SPI.transfer(address);
@@ -162,7 +190,12 @@ void CC1101::writeBurstRegister(uint8_t address, uint8_t* data, uint8_t length)
 	uint8_t i;
 
 	select();
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Recovery for stuck SPI bus.
+		deselect();
+		reset();
+		return;
+	}
 	SPI.transfer(address | CC1101_WRITE_BURST);
 	for (i = 0; i < length; i++) {
 		SPI.transfer(data[i]);
@@ -175,7 +208,15 @@ void CC1101::readBurstRegister(uint8_t* buffer, uint8_t address, uint8_t length)
 	uint8_t i;
 	
 	select();
-	spi_waitMiso();
+	if (!spi_waitMiso()) {
+		// Recovery for stuck SPI bus.
+		deselect();
+		reset();
+		for (i = 0; i < length; i++) {
+			buffer[i] = 0;
+		}
+		return;
+	}
 	SPI.transfer(address | CC1101_READ_BURST);
 	
 	for (i = 0; i < length; i++) {
@@ -188,8 +229,29 @@ void CC1101::readBurstRegister(uint8_t* buffer, uint8_t address, uint8_t length)
 //wait for fixed length in rx fifo
 uint8_t CC1101::receiveData(CC1101Packet* packet, uint8_t length)
 {
-	uint8_t rxBytes = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
-	rxBytes = rxBytes & CC1101_BITS_RX_BYTES_IN_FIFO;
+	uint8_t rxBytes = 0;
+	uint32_t wait_start = millis();
+
+	// Keep this wait short so we can return quickly to the main loop on ESP8266.
+	while (millis() - wait_start <= 4)
+	{
+		const uint8_t rxStatus = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
+		if (rxStatus & CC1101_BITS_TX_FIFO_UNDERFLOW)
+		{
+			// RX FIFO overflow bit set in RXBYTES register.
+			writeCommand(CC1101_SIDLE);
+			writeCommand(CC1101_SFRX);
+			writeCommand(CC1101_SRX);
+			packet->length = 0;
+			return 0;
+		}
+
+		rxBytes = rxStatus & CC1101_BITS_RX_BYTES_IN_FIFO;
+		if (rxBytes >= length)
+			break;
+
+		yield();
+	}
 	
 	//check for rx fifo overflow
 	if ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) == CC1101_MARCSTATE_RXFIFO_OVERFLOW)
@@ -208,6 +270,14 @@ uint8_t CC1101::receiveData(CC1101Packet* packet, uint8_t length)
 		writeCommand(CC1101_SRX); //switch to RX state	
 		
 		packet->length = rxBytes;				
+	}
+	else if (rxBytes > length)
+	{
+		// Unexpected payload size; flush to resync RX state machine.
+		writeCommand(CC1101_SIDLE);
+		writeCommand(CC1101_SFRX);
+		writeCommand(CC1101_SRX);
+		packet->length = 0;
 	}
 	else
 	{
@@ -256,17 +326,33 @@ void CC1101::sendData(CC1101Packet *packet)
 		while (index < packet->length)
 		{
 			//check if there is free space in the fifo
-                        uint32_t wait_start = millis();
-                        while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2)) {
-                          yield();
-                          if (millis() - wait_start > 20 ) {
-                            break;
-                          }
-                        }
+			uint32_t wait_start = millis();
+			while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2)) {
+				yield();
+				if (millis() - wait_start > 20 ) {
+					break;
+				}
+			}
+
+			// Ensure forward progress. If FIFO space never becomes available, abort safely.
+			if (txStatus > (CC1101_DATA_LEN - 2))
+			{
+				writeCommand(CC1101_SIDLE);
+				writeCommand(CC1101_SFTX);
+				return;
+			}
 			
 			//calculate how many bytes we can send
 			length = (CC1101_DATA_LEN - txStatus);
 			length = ((packet->length - index) < length ? (packet->length - index) : length);
+
+			if (length == 0)
+			{
+				// Avoid zero-progress loop when radio reports no writable bytes.
+				writeCommand(CC1101_SIDLE);
+				writeCommand(CC1101_SFTX);
+				return;
+			}
 			
 			//send some more bytes
 			for (int i=0; i<length; i++)
@@ -277,17 +363,25 @@ void CC1101::sendData(CC1101Packet *packet)
 	}
 
 	//wait until transmission is finished (TXOFF_MODE is expected to be set to 0/IDLE or TXFIFO_UNDERFLOW)
-        uint32_t wait_start = millis();
-        do {
-          MarcState = (readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE);
+	uint32_t wait_start = millis();
+	do {
+		MarcState = (readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE);
 //		if (MarcState == CC1101_MARCSTATE_TXFIFO_UNDERFLOW) Serial.print(F("TXFIFO_UNDERFLOW occured in sendData() \n"));
-          yield();  // feed WDT
-        
-          // bail out if radio misbehaves
-          if (millis() - wait_start > 50) {
-            break;
-          }
-        } while ((MarcState != CC1101_MARCSTATE_IDLE) &&
-                 (MarcState != CC1101_MARCSTATE_TXFIFO_UNDERFLOW));
+		yield();  // feed WDT
+
+		// Bail out if radio misbehaves and clean up so later TX can recover.
+		if (millis() - wait_start > 50) {
+			writeCommand(CC1101_SIDLE);
+			writeCommand(CC1101_SFTX);
+			return;
+		}
+	} while ((MarcState != CC1101_MARCSTATE_IDLE) &&
+	         (MarcState != CC1101_MARCSTATE_TXFIFO_UNDERFLOW));
+
+	if (MarcState == CC1101_MARCSTATE_TXFIFO_UNDERFLOW)
+	{
+		writeCommand(CC1101_SIDLE);
+		writeCommand(CC1101_SFTX);
+	}
 
 }
