@@ -172,7 +172,7 @@ class CC1101
 		~CC1101();
 	
 		//spi
-		void spi_waitMiso();
+		bool spi_waitMiso(uint32_t timeout_us = 2000);
 	
 		//cc1101
 		void init();
