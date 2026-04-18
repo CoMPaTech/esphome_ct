@@ -66,7 +66,7 @@ void CC1101Fan::update() {
 
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
-    ITHOcheck();
+    //ITHOcheck();
   }
 
   if (reset_due_) {
@@ -153,19 +153,19 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
     // Handle speed control
     switch (speed) {
       case 4:
-        rf.sendCommand(IthoFull);
+        //rf.sendCommand(IthoFull);
         break;
       case 3:
-        rf.sendCommand(IthoHigh);
+        //rf.sendCommand(IthoHigh);
         break;
       case 2:
-        rf.sendCommand(IthoMedium);
+        //rf.sendCommand(IthoMedium);
         break;
       case 1:
-        rf.sendCommand(IthoLow);
+        //rf.sendCommand(IthoLow);
         break;
       case 0:
-        rf.sendCommand(IthoLow);
+        //rf.sendCommand(IthoLow);
         break;
     }
     if (timer_active_) {
@@ -184,11 +184,11 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
   switch (other_command) {
     case 0: // join
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Join", other_command);
-      rf.sendCommand(IthoJoin);
+      //rf.sendCommand(IthoJoin);
       break;
     case 1: // timer 1
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer1", other_command);
-      rf.sendCommand(IthoTimer1);
+      //rf.sendCommand(IthoTimer1);
       this->speed = 1.0;
       publish_state();
       startResetTimer(Time1);
@@ -196,7 +196,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer2", other_command);
-      rf.sendCommand(IthoTimer2);
+      //rf.sendCommand(IthoTimer2);
       this->speed = 1.0;
       publish_state();
       startResetTimer(Time2);
@@ -204,7 +204,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer3", other_command);
-      rf.sendCommand(IthoTimer3);
+      //rf.sendCommand(IthoTimer3);
       this->speed = 1.0;
       publish_state();
       startResetTimer(Time3);
