@@ -38,9 +38,7 @@ void CC1101Fan::setup() {
     restore->apply(*this);
   }
 
-  rf.init();
-  this->data_pin_->setup();
-  this->data_pin_->pin_mode(gpio::FLAG_INPUT);
+  //rf.init();
 //  ITHOticker.attach_ms(100, std::bind(&CC1101Fan::check_pin, this));
 
   
@@ -69,6 +67,9 @@ void CC1101Fan::update() {
   uint32_t now = millis();
 
   if (!radio_initialized_) {
+    rf.init();
+    this->data_pin_->setup();
+    this->data_pin_->pin_mode(gpio::FLAG_INPUT);
     rf.initReceive();
     radio_initialized_ = true;
     return;  // do not process packets on the same cycle
