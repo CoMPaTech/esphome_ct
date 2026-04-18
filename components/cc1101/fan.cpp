@@ -66,7 +66,7 @@ void CC1101Fan::update() {
 
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
-    //ITHOcheck();
+    ITHOcheck();
   }
 
   if (reset_due_) {

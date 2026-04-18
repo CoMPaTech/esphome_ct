@@ -278,11 +278,7 @@ void IthoCC1101::initReceive()
 	writeCommand(CC1101_SCAL);
 
 	//wait for calibration to finish
-	uint32_t start = millis();
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) {
-                yield(); // feed the wdt
-                if (millis() - start > 50) { break; }
-	}
+	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) yield();
 
 	writeRegister(CC1101_FSCAL2 ,0x00);
 	writeRegister(CC1101_MCSM0 ,0x18);			//no auto calibrate
@@ -326,10 +322,7 @@ void IthoCC1101::initReceive()
 	writeCommand(CC1101_SCAL);
 
 	//wait for calibration to finish
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) {
-                yield(); // feed the wdt
-                if (millis() - start > 50) { break; }
-	}
+	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_IDLE) yield();
 
 	writeRegister(CC1101_MCSM0 ,0x18);			//no auto calibrate
 	
@@ -341,10 +334,7 @@ void IthoCC1101::initReceive()
 
 	writeCommand(CC1101_SRX);
 	
-	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_RX) {
-                yield(); // feed the wdt
-                if (millis() - start > 50) { break; }
-	}
+	while ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER)) != CC1101_MARCSTATE_RX) yield();
 	
 //	initReceiveMessage2(IthoUnknown);
 	initReceiveMessage2(ithomsg_unknown);
