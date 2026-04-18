@@ -24,6 +24,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
 //  static void ITHOinterrupt();
   void ITHOcheck();
   float get_setup_priority() const override;
+  bool radio_initialized_ = false;
 
  protected:
   void control(const fan::FanCall &call) override;

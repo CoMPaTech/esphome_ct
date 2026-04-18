@@ -67,6 +67,12 @@ void CC1101Fan::setup() {
 void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
+
+  if (!radio_initialized_) {
+    itho_.initReceive();
+    radio_initialized_ = true;
+    return;  // do not process packets on the same cycle
+  }
  
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
