@@ -257,8 +257,8 @@ void CC1101Fan::ITHOcheck() {
     IthoCommand cmd = rf.getLastCommand();
     IthoPacket pkt = rf.getLastPacket();
     LastID = rf.getLastIDstr();
-    ESP_LOGD("c1101_fan", "Debug - RemoteID1: %s", id_to_hex(pkt.deviceId1, sizeof(pkt.deviceId1));
-    ESP_LOGD("c1101_fan", "Debug - RemoteID2: %s", id_to_hex(pkt.deviceId2, sizeof(pkt.deviceId2));
+    ESP_LOGD("c1101_fan", "Debug - RemoteID1: %s", id_to_hex(pkt.deviceId1, sizeof(pkt.deviceId1)));
+    ESP_LOGD("c1101_fan", "Debug - RemoteID2: %s", id_to_hex(pkt.deviceId2, sizeof(pkt.deviceId2)));
     ESP_LOGD("c1101_fan", "Debug - LastID: %s", LastID.c_str());
     switch (cmd) {
       case IthoUnknown:
