@@ -23,7 +23,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void send_other_command(uint8_t other_command);
 //  static void ITHOinterrupt();
   void ITHOcheck();
-  float CC1101Fan::get_setup_priority();
+  float get_setup_priority() const override;
 
  protected:
   void control(const fan::FanCall &call) override;

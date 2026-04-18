@@ -28,7 +28,6 @@ uint16_t Time2 = 20*60;
 uint16_t Time3 = 30*60;
 
 float CC1101Fan::get_setup_priority() const {
-    // Run after Wi-Fi (which uses priority 200)
     return esphome::setup_priority::AFTER_WIFI;
 }
 
