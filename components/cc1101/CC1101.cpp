@@ -197,8 +197,20 @@ void CC1101::readBurstRegister(uint8_t* buffer, uint8_t address, uint8_t length)
 //wait for fixed length in rx fifo
 uint8_t CC1101::receiveData(CC1101Packet* packet, uint8_t length)
 {
-	uint8_t rxBytes = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
-	rxBytes = rxBytes & CC1101_BITS_RX_BYTES_IN_FIFO;
+	//uint8_t rxBytes = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
+	//rxBytes = rxBytes & CC1101_BITS_RX_BYTES_IN_FIFO;
+
+        uint32_t start = millis();
+        uint8_t rxBytes;
+
+        while (true) {
+            rxBytes = readRegisterWithSyncProblem(CC1101_RXBYTES, CC1101_STATUS_REGISTER);
+            rxBytes &= CC1101_BITS_RX_BYTES_IN_FIFO;
+        
+            if (rxBytes == length) break;
+            if (millis() - start > 20) return 0;  // timeout, no packet
+            yield();
+        }
 	
 	//check for rx fifo overflow
 	if ((readRegisterWithSyncProblem(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & CC1101_BITS_MARCSTATE) == CC1101_MARCSTATE_RXFIFO_OVERFLOW)
