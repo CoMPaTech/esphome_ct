@@ -252,8 +252,8 @@ void CC1101::sendData(CC1101Packet *packet)
 		while (index < packet->length)
 		{
 			//check if there is free space in the fifo
-                        uint32_t wait_start = millis()
-			while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2)) {
+                        uint32_t wait_start = millis();
+                        while ((txStatus = (readRegisterMedian3(CC1101_TXBYTES | CC1101_STATUS_REGISTER) & CC1101_BITS_RX_BYTES_IN_FIFO)) > (CC1101_DATA_LEN - 2)) {
                           yield();
                           if (millis() - wait_start > 20 ) {
                             break;
