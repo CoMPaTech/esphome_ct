@@ -54,6 +54,7 @@ void CC1101Fan::setup() {
   //pinMode(D1, INPUT);
   //attachInterrupt(D1, CC1101Fan::ITHOinterrupt, RISING);
   //rf.initReceive();
+  boot_time_ = millis();
 }
 
 //void CC1101Fan::check_pin() {
@@ -65,6 +66,10 @@ void CC1101Fan::setup() {
 void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
+
+  if (millis() - boot_time_ < 5000) {
+    return;
+  }
 
   if (!radio_initialized_) {
     rf.init();
