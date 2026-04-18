@@ -210,7 +210,7 @@ void CC1101Fan::startResetTimer(uint16_t seconds) {
   timer_active_ = true;
   reset_seconds_ = seconds;
   reset_timer_.once(seconds, [this]() {
-    this_reset_due_ = true;
+    this->reset_due_ = true;
   });
   ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
   this->publish_state();
