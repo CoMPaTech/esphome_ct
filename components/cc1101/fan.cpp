@@ -34,7 +34,7 @@ void CC1101Fan::setup() {
     restore->apply(*this);
   }
 
-  rf.init();
+  //rf.init();
   this->data_pin_->setup();
   this->data_pin_->pin_mode(gpio::FLAG_INPUT);
 //  ITHOticker.attach_ms(100, std::bind(&CC1101Fan::check_pin, this));
@@ -51,7 +51,7 @@ void CC1101Fan::setup() {
   // Init CC1101
   //pinMode(D1, INPUT);
   //attachInterrupt(D1, CC1101Fan::ITHOinterrupt, RISING);
-  rf.initReceive();
+  //rf.initReceive();
 }
 
 //void CC1101Fan::check_pin() {
@@ -81,7 +81,8 @@ void CC1101Fan::update() {
 }
 
 void CC1101Fan::publish_state() {
-  bool new_state = (this->speed > 0);
+  // Use RF Speed as the single source of truth
+  bool new_state = (this->Speed > 0);
   uint8_t new_speed = this->Speed;
 
   if (this->map_off_to_zero_ && this->Speed == 0) {
@@ -91,10 +92,13 @@ void CC1101Fan::publish_state() {
 
   bool changed = (this->state != new_state) || (this->speed != new_speed);
 
-  if (changed) { 
-    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", new_state, this->state, new_speed, this->Speed);
-    this->speed = new_state;
-    this->state = new_speed;
+  if (changed) {
+    ESP_LOGD("cc1101_fan",
+             "Publishing state: %d (was %d) from speed %d (was %d)",
+             new_state, this->state, new_speed, this->speed);
+
+    this->state = new_state;
+    this->speed = new_speed;
 
     fan::Fan::publish_state();
   }
