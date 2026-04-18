@@ -2,7 +2,6 @@
 #include "fan.h"
 #include "IthoCC1101.h"
 #include "Ticker.h"
-#include "esphome/core/network_util.h"
 
 namespace esphome {
 namespace cc1101fan {
@@ -65,9 +64,7 @@ void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
  
-  if (!esphome::network::is_connected()) {
-        return;
-  }
+  if (!App.is_connected()) return;
 
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
