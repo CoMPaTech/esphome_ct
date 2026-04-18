@@ -61,7 +61,13 @@ void CC1101Fan::setup() {
 //}
 
 void CC1101Fan::update() {
-  CC1101Fan::ITHOcheck();
+  static uint32_t last_rf_check = 0;
+  uint32_t now = millis();
+
+  if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
+    last_rf_check = now;
+    ITHOcheck();
+  }
 
   if (reset_due_) {
     reset_due_ = false;
