@@ -87,7 +87,7 @@ void CC1101Fan::publish_state() {
   bool changed = (this->state != new_state) || (this->speed != new_speed);
 
   if (changed) { 
-    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
+    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", new_state, this->state, new_speed, this->Speed);
     this->speed = new_state;
     this->state = new_speed;
 
