@@ -55,7 +55,7 @@ void CC1101Fan::setup() {
   // Init CC1101
   //pinMode(D1, INPUT);
   //attachInterrupt(D1, CC1101Fan::ITHOinterrupt, RISING);
-  rf.initReceive();
+  //rf.initReceive();
 }
 
 //void CC1101Fan::check_pin() {
@@ -69,7 +69,7 @@ void CC1101Fan::update() {
   uint32_t now = millis();
 
   if (!radio_initialized_) {
-    itho_.initReceive();
+    rf.initReceive();
     radio_initialized_ = true;
     return;  // do not process packets on the same cycle
   }
