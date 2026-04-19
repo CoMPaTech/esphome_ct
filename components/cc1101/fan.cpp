@@ -81,14 +81,14 @@ void CC1101Fan::update() {
     this->data_pin_->pin_mode(gpio::FLAG_INPUT);
     rf.initReceive();
     radio_initialized_ = true;
-    return;  // do not process packets on the same cycle
+    this->publish_state();
+    //return;  // do not process packets on the same cycle
   }
  
   if (now - last_rf_check >= 20) {  // e.g. 50 Hz max
     last_rf_check = now;
     CC1101Fan::ITHOcheck();
   }
-  this->publish_state();
 
 /*
     // Only publish if the state has changed
