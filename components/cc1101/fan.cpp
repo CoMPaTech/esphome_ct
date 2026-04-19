@@ -63,9 +63,7 @@ void CC1101Fan::setup() {
 void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
-  ESP_LOGD("cc1101_fan", "update() stub");
 
-/*
   // Handle scheduled reset
   if (reset_due_) {
       reset_due_ = false;
@@ -90,7 +88,6 @@ void CC1101Fan::update() {
     last_rf_check = now;
     CC1101Fan::ITHOcheck();
   }
-*/
 
 /*
     // Only publish if the state has changed

@@ -11,7 +11,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
  public:
   GPIOPin *data_pin_;
 
-  CC1101Fan(int speed_count, bool map_off_to_zero) : speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
+  CC1101Fan(int speed_count, bool map_off_to_zero) : PollingComponent(50), speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
   void set_data_pin(GPIOPin *data_pin) { data_pin_ = data_pin; }
   void setup() override;
   void update() override;
