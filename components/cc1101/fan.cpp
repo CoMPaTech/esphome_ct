@@ -27,6 +27,7 @@ uint16_t Time2 = 20*60;
 uint16_t Time3 = 30*60;
 
 void CC1101Fan::setup() {
+  boot_time_ = millis();  // <-- add this
   auto restore = this->restore_state_();
   if (restore.has_value()) {
     ESP_LOGD("cc1101_fan", "restoring");
@@ -62,6 +63,10 @@ void CC1101Fan::setup() {
 void CC1101Fan::update() {
   static uint32_t last_rf_check = 0;
   uint32_t now = millis();
+  ESP_LOGD("cc1101_fan", "update() stub");
+}
+
+void temp() {
 
   // Handle scheduled reset
   if (reset_due_) {
