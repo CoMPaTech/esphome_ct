@@ -88,6 +88,7 @@ void CC1101Fan::update() {
     last_rf_check = now;
     CC1101Fan::ITHOcheck();
   }
+  this->publish_state();
 
 /*
     // Only publish if the state has changed
