@@ -175,16 +175,16 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
         rf.sendCommand(IthoLow);
         break;
     }
+    if (timer_active_) {
+      reset_timer_.detach();
+      ESP_LOGD("cc1101_fan", "Timer was active and has been canceled from new timer");
+    }
     timer_active_ = true;
     reset_seconds_ = seconds;
-
-    ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
-
-    // Schedule safe main-loop callback
-    this->set_timeout(seconds * 1000, [this]() {
+    reset_timer_.once(seconds, [this]() {
       this->reset_due_ = true;
     });
-
+    ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
     this->publish_state();
   } 
 }
@@ -222,17 +222,17 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
 }
 
 void CC1101Fan::startResetTimer(uint16_t seconds) {
-  if (timer_active_) {
-    timer_active_ = false;
-    ESP_LOGD("cc1101_fan", "Timer was active and has been canceled from new timer");
-  }
-  timer_active_ = true;
-  //reset_timer_.once(seconds, [this, seconds]() { this->resetFanSpeed(seconds); });
-  this->set_timeout(seconds * 1000, [this]() {
-    this->reset_due_ = true;
-  });
-  ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
-  this->publish_state();
+    timer_active_ = true;
+    reset_seconds_ = seconds;
+
+    ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
+
+    // Schedule safe main-loop callback
+    this->set_timeout(seconds * 1000, [this]() {
+      this->reset_due_ = true;
+    });
+
+    this->publish_state();
 }
 
 void CC1101Fan::resetFanSpeed(uint16_t seconds) {
