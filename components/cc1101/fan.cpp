@@ -176,7 +176,7 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
         break;
     }
     timer_active_ = true;
-    reset_seconds_ = seconds;
+    reset_seconds_ = useconds_t;
 
     ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
 
