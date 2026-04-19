@@ -23,7 +23,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void send_other_command(uint8_t other_command);
 //  static void ITHOinterrupt();
   void ITHOcheck();
-  bool timer_active_ = false
+  bool timer_active_ = false;
   bool reset_due_ = false;
   uint16_t reset_seconds_ = 0;
   uint32_t boot_time_ = 0;
