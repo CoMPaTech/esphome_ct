@@ -176,15 +176,13 @@ void CC1101Fan::set_fan_speed(uint8_t speed) {
         break;
     }
     if (timer_active_) {
-      reset_timer_.detach();
-      ESP_LOGD("cc1101_fan", "Timer was active and has been canceled from new timer");
+      timer_active_ = false;
+      ESP_LOGD("cc1101_fan", "Timer was active and has been canceled (other manual command send by us)");
+
     }
-    timer_active_ = true;
-    reset_seconds_ = seconds;
-    reset_timer_.once(seconds, [this]() {
-      this->reset_due_ = true;
-    });
-    ESP_LOGD("cc1101_fan", "Button timer started for %d seconds", seconds);
+    this->LastSpeed = this->Speed;
+    this->Speed = speed;
+    if ( this->map_off_to_zero_ && speed == 0 ) this->Speed = 1;
     this->publish_state();
   } 
 }
