@@ -11,7 +11,7 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
  public:
   GPIOPin *data_pin_;
 
-  CC1101Fan(int speed_count, bool map_off_to_zero) : speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
+  CC1101Fan(int speed_count, bool map_off_to_zero) : PollingComponent(200), speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
   void set_data_pin(GPIOPin *data_pin) { data_pin_ = data_pin; }
   void setup() override;
   void update() override;
@@ -23,6 +23,11 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
   void send_other_command(uint8_t other_command);
 //  static void ITHOinterrupt();
   void ITHOcheck();
+  bool timer_active_ = false;
+  bool reset_due_ = false;
+  uint16_t reset_seconds_ = 0;
+  uint32_t boot_time_ = 0;
+  bool radio_initialized_ = false;
 
  protected:
   void control(const fan::FanCall &call) override;
