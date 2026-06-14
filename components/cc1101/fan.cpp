@@ -104,6 +104,23 @@ void CC1101Fan::update() {
 }
 
 void CC1101Fan::publish_state() {
+  fan::Fan::publish_state();
+}
+void CC1101Fan::write_state() {
+  auto call = this->make_call();
+  auto current_state = this->state;
+  auto current_speed = this->speed;
+  uint8_t esp_speed = 0;
+
+  if (this->Speed >= 1 && this->Speed <= this->speed_count_) {
+    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
+    esp_speed = this->Speed;
+  }
+
+  call.set_state(esp_speed > 0);
+  call.set_speed(esp_speed);
+  call.perform();
+  /*
   auto current_state = this->state;
   auto current_speed = this->speed;
   this->speed = 0;
@@ -116,11 +133,9 @@ void CC1101Fan::publish_state() {
     ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
     this->state_callback_(); // Notify ESPHome about the state change
   }
-  this->state_ = (this->Speed >0);
-  this->speed_ = this->Speed;
-  fan::Fan::publish_state();
-
+  */
 }
+
 
 fan::FanTraits CC1101Fan::get_traits() {
     fan::FanTraits traits;
