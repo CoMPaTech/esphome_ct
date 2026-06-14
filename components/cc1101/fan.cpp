@@ -116,6 +116,9 @@ void CC1101Fan::publish_state() {
     ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
     this->state_callback_(); // Notify ESPHome about the state change
   }
+  this->state_ = (this->Speed >0);
+  this->speed_ = this->Speed;
+  fan::Fan::publish_state();
 
 }
 
