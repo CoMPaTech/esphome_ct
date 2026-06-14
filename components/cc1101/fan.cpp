@@ -108,12 +108,10 @@ void CC1101Fan::publish_state() {
 }
 void CC1101Fan::write_state_() {
   auto call = this->make_call();
-  auto current_state = this->state;
-  auto current_speed = this->speed;
   uint8_t esp_speed = 0;
 
   if (this->Speed >= 1 && this->Speed <= this->speed_count_) {
-    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
+    ESP_LOGD("cc1101_fan", "Publishing state: %d with %d", esp_speed > 0, esp_speed);
     esp_speed = this->Speed;
   }
 
