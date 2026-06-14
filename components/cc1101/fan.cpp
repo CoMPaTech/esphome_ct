@@ -200,21 +200,18 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 1: // timer 1
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer1", other_command);
       rf.sendCommand(IthoTimer1);
-      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time1);
 
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
-      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time2);
 
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
-      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time3);
       break;
   }
@@ -306,21 +303,21 @@ void CC1101Fan::ITHOcheck() {
         ESP_LOGD("cc1101_fan", "Received remote sending timer1, setting our own");
         this->startResetTimer(Time1);
         this->LastSpeed = this->Speed;
-        this->Speed = 3;
+        this->Speed = this->speed_count_;
         break;
       case IthoTimer2:
         ESP_LOGD("c1101_fan", "Timer2");
         ESP_LOGD("cc1101_fan", "Received remote sending timer2, setting our own");
         this->startResetTimer(Time2);
         this->LastSpeed = this->Speed;
-        this->Speed = 3;
+        this->Speed = this->speed_count_;
         break;
       case IthoTimer3:
         ESP_LOGD("c1101_fan", "Timer3");
         ESP_LOGD("cc1101_fan", "Received remote sending timer3, setting our own");
         this->startResetTimer(Time3);
         this->LastSpeed = this->Speed;
-        this->Speed = 3;
+        this->Speed = this->speed_count_;
         break;
       case IthoJoin:
         ESP_LOGD("c1101_fan", "IthoJoin spotted");
