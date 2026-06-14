@@ -122,7 +122,7 @@ void CC1101Fan::write_state_() {
 
 
 fan::FanTraits CC1101Fan::get_traits() {
-    fan::FanTraits traits{};
+    fan::FanTraits traits;
     traits.set_speed(true);  // The fan supports speed control
     traits.set_supported_speed_count(this->speed_count_);  // Number of speeds
     traits.set_oscillation(false);  // The fan does not support oscillation
