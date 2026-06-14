@@ -106,7 +106,7 @@ void CC1101Fan::update() {
 void CC1101Fan::publish_state() {
   fan::Fan::publish_state();
 }
-void CC1101Fan::write_state() {
+void CC1101Fan::write_state_() {
   auto call = this->make_call();
   auto current_state = this->state;
   auto current_speed = this->speed;
