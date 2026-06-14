@@ -138,11 +138,12 @@ void CC1101Fan::write_state_() {
 
 
 fan::FanTraits CC1101Fan::get_traits() {
-    fan::FanTraits traits;
+    fan::FanTraits traits{};
     traits.set_speed(true);  // The fan supports speed control
     traits.set_supported_speed_count(this->speed_count_);  // Number of speeds
     traits.set_oscillation(false);  // The fan does not support oscillation
     traits.set_direction(false);  // The fan does not support direction control
+    ESP_LOGD("cc1101_fan", "Publishing traits: set_speed: true, set_supported_speed_count %d", this->speed_count_);
     return traits;
   //return fan::FanTraits(this->oscillation_id_.has_value(), this->speed_id_.has_value(), this->direction_id_.has_value(),
 }
@@ -217,24 +218,24 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer1", other_command);
       rf.sendCommand(IthoTimer1);
       this->speed = 1.0;
-      publish_state();
-      startResetTimer(Time1);
+      this->publish_state();
+      this->startResetTimer(Time1);
 
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
       this->speed = 1.0;
-      publish_state();
-      startResetTimer(Time2);
+      this->publish_state();
+      this->startResetTimer(Time2);
 
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
       this->speed = 1.0;
-      publish_state();
-      startResetTimer(Time3);
+      this->publish_state();
+      this->startResetTimer(Time3);
       break;
   }
 }
@@ -258,7 +259,7 @@ void CC1101Fan::resetFanSpeed(uint16_t seconds) {
       this->state = 1;
       timer_active_ = false;
       ESP_LOGD("cc1101_fan", "Timer of %d seconds lapsed, assuming back to normal speed", seconds);
-      publish_state();
+      this->publish_state();
 }
 
 void CC1101Fan::set_output(void *output) {
@@ -324,21 +325,21 @@ void CC1101Fan::ITHOcheck() {
       case IthoTimer1:
         ESP_LOGD("c1101_fan", "Timer1");
         ESP_LOGD("cc1101_fan", "Received remote sending timer1, setting our own");
-        startResetTimer(Time1);
+        this->startResetTimer(Time1);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
       case IthoTimer2:
         ESP_LOGD("c1101_fan", "Timer2");
         ESP_LOGD("cc1101_fan", "Received remote sending timer2, setting our own");
-        startResetTimer(Time2);
+        this->startResetTimer(Time2);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
       case IthoTimer3:
         ESP_LOGD("c1101_fan", "Timer3");
         ESP_LOGD("cc1101_fan", "Received remote sending timer3, setting our own");
-        startResetTimer(Time3);
+        this->startResetTimer(Time3);
         this->LastSpeed = this->Speed;
         this->Speed = 3;
         break;
