@@ -200,24 +200,21 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 1: // timer 1
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer1", other_command);
       rf.sendCommand(IthoTimer1);
-      this->Speed = 3;
-      this->publish_state();
+      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time1);
 
       break;
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
-      this->Speed = 3;
-      this->publish_state();
+      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time2);
 
       break;
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
-      this->Speed = 3;
-      this->publish_state();
+      this->set_fan_speed(this->speed_count_);
       this->startResetTimer(Time3);
       break;
   }
@@ -238,11 +235,10 @@ void CC1101Fan::startResetTimer(uint16_t seconds) {
 }
 
 void CC1101Fan::resetFanSpeed(uint16_t seconds) {
-      this->Speed = 0;
       //this->state = 1;
       timer_active_ = false;
       ESP_LOGD("cc1101_fan", "Timer of %d seconds lapsed, assuming back to normal speed", seconds);
-      this->publish_state();
+      this->set_fan_speed(0);
 }
 
 void CC1101Fan::set_output(void *output) {
