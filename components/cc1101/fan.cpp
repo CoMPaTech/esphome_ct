@@ -127,7 +127,7 @@ fan::FanTraits CC1101Fan::get_traits() {
     traits.set_supported_speed_count(this->speed_count_);  // Number of speeds
     traits.set_oscillation(false);  // The fan does not support oscillation
     traits.set_direction(false);  // The fan does not support direction control
-    ESP_LOGD("cc1101_fan", "Publishing traits: set_speed: true, set_supported_speed_count %d", this->speed_count_);
+    ESP_LOGD("cc1101_fan", "Publishing traits: set_speed: true, set_supported_speed_count %d as %s", this->speed_count_, traits);
     return traits;
   //return fan::FanTraits(this->oscillation_id_.has_value(), this->speed_id_.has_value(), this->direction_id_.has_value(),
 }
