@@ -118,20 +118,6 @@ void CC1101Fan::write_state_() {
   call.set_state(esp_speed > 0);
   call.set_speed(esp_speed);
   call.perform();
-  /*
-  auto current_state = this->state;
-  auto current_speed = this->speed;
-  this->speed = 0;
-  this->state = 0;
-  if (this->Speed >= 0) { 
-    this->speed = this->Speed;
-    this->state = 1;
-  }
-  if (current_state != this->state || current_speed != this->speed ) {
-    ESP_LOGD("cc1101_fan", "Publishing state: %d (was %d) from speed %d (was %d) ", this->state, current_state, this->Speed, current_speed);
-    this->state_callback_(); // Notify ESPHome about the state change
-  }
-  */
 }
 
 
@@ -215,7 +201,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 1: // timer 1
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer1", other_command);
       rf.sendCommand(IthoTimer1);
-      this->speed = 1.0;
+      this->Speed = 1.0;
       this->publish_state();
       this->startResetTimer(Time1);
 
@@ -223,7 +209,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 2: // timer 2
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer2", other_command);
       rf.sendCommand(IthoTimer2);
-      this->speed = 1.0;
+      this->Speed = 1.0;
       this->publish_state();
       this->startResetTimer(Time2);
 
@@ -231,7 +217,7 @@ void CC1101Fan::send_other_command(uint8_t other_command) {
     case 3: // timer 3
       ESP_LOGD("cc1101_fan", "RF called with %d, sending Timer3", other_command);
       rf.sendCommand(IthoTimer3);
-      this->speed = 1.0;
+      this->Speed = 1.0;
       this->publish_state();
       this->startResetTimer(Time3);
       break;
