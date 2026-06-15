@@ -7,14 +7,14 @@
 namespace esphome {
 namespace cc1101fan {
 
-class CC1101Fan : public PollingComponent, public fan::Fan {
+class CC1101Fan : public Component, public fan::Fan {
  public:
   GPIOPin *data_pin_;
 
-  CC1101Fan(int speed_count, bool map_off_to_zero) : PollingComponent(200), speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
+  CC1101Fan(int speed_count, bool map_off_to_zero) : Component(), speed_count_(speed_count), map_off_to_zero_(map_off_to_zero) {}
   void set_data_pin(GPIOPin *data_pin) { data_pin_ = data_pin; }
   void setup() override;
-  void update() override;
+  void loop() override;
   void check_pin();
   void set_preset_modes(const std::set<std::string> &presets) { this->preset_modes_ = presets; }
   fan::FanTraits get_traits() override;
@@ -31,7 +31,6 @@ class CC1101Fan : public PollingComponent, public fan::Fan {
 
  protected:
   void control(const fan::FanCall &call) override;
-  void write_state_();
   void publish_state();
   void resetFanSpeed(uint16_t seconds);
   void startResetTimer(uint16_t seconds);
