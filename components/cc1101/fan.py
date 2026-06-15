@@ -7,7 +7,7 @@ from esphome.cpp_helpers import gpio_pin_expression
 from esphome.const import CONF_DISABLED_BY_DEFAULT, CONF_NAME, CONF_OUTPUT_ID, CONF_DATA_PIN, CONF_PRESET_MODES, CONF_RESTORE_MODE, CONF_SPEED_COUNT
 
 cc1101fan_ns = cg.esphome_ns.namespace("cc1101fan")
-CC1101Fan = cc1101fan_ns.class_("CC1101Fan", cg.PollingComponent, fan.Fan)
+CC1101Fan = cc1101fan_ns.class_("CC1101Fan", cg.Component, fan.Fan)
 
 MAP_OFF_TO_ZERO = "map_off_to_zero"
 
