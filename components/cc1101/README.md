@@ -86,7 +86,7 @@ fan:
     speed_count: 3
     name: "Mechanical Fan"
     data_pin: D1
-    map_off_to_zero: True
+    map_off_to_zero: True  # If your unit is always in low, set to True - if your unit allows turning off or standby ste to False)
     id: mech_fan
 ```
 
