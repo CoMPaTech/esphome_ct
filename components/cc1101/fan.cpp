@@ -291,7 +291,7 @@ void CC1101Fan::ITHOcheck() {
       case IthoStandby:
         ESP_LOGD("c1101_fan", "0 / Standby");
         if (timer_active_) {
-          reset_timer_.detach();
+          timer_active_ = false;
           ESP_LOGD("cc1101_fan", "Timer was active and has been canceled received remote sending standby");
         }
         this->LastSpeed = this->Speed;
